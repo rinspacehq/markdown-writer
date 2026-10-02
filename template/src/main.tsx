@@ -2,10 +2,8 @@ import { Crepe, type CrepeConfig } from '@milkdown/crepe';
 import '@milkdown/crepe/theme/common/style.css';
 import '@milkdown/crepe/theme/frame.css';
 import { editorViewCtx } from '@milkdown/kit/core';
-import { replaceAll } from '@milkdown/kit/utils';
 import {
-  joinTitleMarkdown, markdownMathForMilkdown, normalizeLatexBlockEditorValue,
-  normalizeMilkdownMathMarkdown, registerWritingEnhancements, splitTitleMarkdown,
+  normalizeLatexBlockEditorValue, normalizeMilkdownMathMarkdown, registerWritingEnhancements,
 } from '@rinspacehq/milkdown-writing-preset';
 import {
   createMathReparseController, createWritingInteractions, insertLatexBlockInCtx,
@@ -15,7 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 
-const initialBody = 'Write Markdown here. Try $x^2$, $$x^2+y^2$$, or a table.\n';
+const initialBody = '';
 type MathDraft = { pos: number; value: string };
 
 function App() {
@@ -25,8 +23,6 @@ function App() {
   const syncingRef = useRef(false);
   const readOnlyRef = useRef(false);
   const [title, setTitle] = useState('Untitled document');
-  const [body, setBody] = useState(initialBody);
-  const [source, setSource] = useState('');
   const [math, setMath] = useState<MathDraft | null>(null);
   const [error, setError] = useState('');
 
@@ -37,6 +33,17 @@ function App() {
     const featureConfigs: NonNullable<CrepeConfig['featureConfigs']> = {
       [Crepe.Feature.BlockEdit]: { textGroup: { h1: null }, advancedGroup: { math: null } },
       [Crepe.Feature.Latex]: { katexOptions: { throwOnError: false, strict: false, trust: false } },
+      [Crepe.Feature.TopBar]: {
+        buildTopBar: (builder) => {
+          const mathItem = builder.getGroup('block').group.items.find((item) => item.key === 'math');
+          if (mathItem) {
+            mathItem.onRun = (ctx) => {
+              const pos = insertLatexBlockInCtx(ctx);
+              if (typeof pos === 'number') setMath({ pos, value: '' });
+            };
+          }
+        },
+      },
       [Crepe.Feature.Placeholder]: { text: 'Start writing Markdown…', mode: 'block' },
     };
     const crepe = new Crepe({
@@ -47,6 +54,7 @@ function App() {
         [Crepe.Feature.Toolbar]: true, [Crepe.Feature.BlockEdit]: true,
         [Crepe.Feature.TopBar]: true, [Crepe.Feature.Table]: true,
         [Crepe.Feature.LinkTooltip]: true, [Crepe.Feature.Placeholder]: true,
+        [Crepe.Feature.ImageBlock]: false,
       },
       featureConfigs,
     });
@@ -92,7 +100,6 @@ function App() {
     crepe.on((listener) => listener.markdownUpdated((_ctx, markdown) => {
       const next = normalizeMilkdownMathMarkdown(markdown);
       markdownRef.current = next;
-      setBody(next);
       if (!syncingRef.current) reparse.schedule(next);
     }));
     editorRef.current = crepe;
@@ -109,12 +116,6 @@ function App() {
     };
   }, []);
 
-  const insertMath = () => {
-    const editor = editorRef.current;
-    if (!editor) return;
-    const pos = editor.editor.action((ctx) => insertLatexBlockInCtx(ctx));
-    if (typeof pos === 'number') setMath({ pos, value: '' });
-  };
   const saveMath = () => {
     const editor = editorRef.current;
     if (!editor || !math) return;
@@ -125,32 +126,13 @@ function App() {
     setMath(null);
     setError('');
   };
-  const exportMarkdown = () => {
-    const markdown = joinTitleMarkdown(title, editorRef.current?.getMarkdown() ?? body);
-    setSource(markdown);
-    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'document.md';
-    link.click();
-    window.setTimeout(() => URL.revokeObjectURL(url), 0);
-  };
-  const importMarkdown = () => {
-    const parsed = splitTitleMarkdown(source);
-    setMath(null);
-    setTitle(parsed.title);
-    setBody(parsed.body);
-    markdownRef.current = parsed.body;
-    editorRef.current?.editor.action(replaceAll(markdownMathForMilkdown(parsed.body), true));
-  };
   return (
     <main>
-      <label className="title-label" htmlFor="document-title">Title</label>
-      <input id="document-title" value={title} onChange={(event) => setTitle(event.target.value)} />
-      <div className="editor-actions"><button type="button" onClick={insertMath}>Insert formula</button></div>
+      <header className="document-header">
+        <label className="visually-hidden" htmlFor="document-title">Title</label>
+        <input id="document-title" value={title} onChange={(event) => setTitle(event.target.value)} />
+      </header>
       <div className="editor" ref={hostRef} aria-label="Markdown editor" />
-      <p className="tip">Try <code># Section</code> in the body, <code>$$x^2$$</code> on a new line, or a pipe table followed by a blank line.</p>
       {math && (
         <section className="math-panel" aria-label="Edit LaTeX formula">
           <label htmlFor="math-source">LaTeX formula</label>
@@ -159,11 +141,6 @@ function App() {
         </section>
       )}
       {error && <p role="alert">{error}</p>}
-      <section className="markdown-tools" aria-label="Markdown import and export">
-        <label htmlFor="markdown-source">Markdown source</label>
-        <textarea id="markdown-source" value={source} onChange={(event) => setSource(event.target.value)} />
-        <div className="actions"><button type="button" onClick={importMarkdown}>Import Markdown</button><button type="button" onClick={exportMarkdown}>Export Markdown</button></div>
-      </section>
     </main>
   );
 }
