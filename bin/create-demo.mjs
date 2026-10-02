@@ -16,7 +16,9 @@ if (args[0] !== 'create') {
   process.exit(2);
 }
 
-const targetArg = args.find((arg, index) => index > 0 && !arg.startsWith('--')) || 'milkdown-writing-demo';
+const targetArg = args.find((arg, index) =>
+  index > 0 && !arg.startsWith('--') && args[index - 1] !== '--package-spec',
+) || 'milkdown-writing-demo';
 const target = resolve(process.cwd(), targetArg);
 if (existsSync(target)) {
   console.error(`Directory already exists: ${target}`);
@@ -25,7 +27,7 @@ if (existsSync(target)) {
 
 const packageInfo = JSON.parse(readFileSync(resolve(packageRoot, 'package.json'), 'utf8'));
 const specIndex = args.indexOf('--package-spec');
-if (specIndex >= 0 && !args[specIndex + 1]) {
+if (specIndex >= 0 && (!args[specIndex + 1] || args[specIndex + 1].startsWith('--'))) {
   console.error('--package-spec requires an npm package spec or tarball path.');
   process.exit(2);
 }
@@ -39,6 +41,7 @@ for (const filename of ['main.tsx', 'style.css']) {
 }
 const project = JSON.parse(readFileSync(resolve(template, 'package.json'), 'utf8'));
 project.name = basename(target).toLowerCase().replace(/[^a-z0-9-]/g, '-') || 'milkdown-writing-demo';
+project.version = packageInfo.version;
 const releaseAssetUrl = `https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v${packageInfo.version}/rinspacehq-milkdown-writing-preset-${packageInfo.version}.tgz`;
 project.dependencies[packageInfo.name] = specIndex >= 0 ? args[specIndex + 1] : releaseAssetUrl;
 writeFileSync(resolve(target, 'package.json'), `${JSON.stringify(project, null, 2)}\n`);
@@ -60,6 +63,13 @@ function run(command, commandArgs) {
 try {
   const install = await run('npm', ['install']);
   if (install.code !== 0) process.exit(install.code || 1);
+  for (const dependency of ['@milkdown/crepe', '@milkdown/kit', packageInfo.name]) {
+    const installed = resolve(target, 'node_modules', dependency, 'package.json');
+    if (!existsSync(installed)) {
+      throw new Error(`Missing local dependency: ${dependency}. Run npm install in ${target}.`);
+    }
+  }
+  console.log('Milkdown and the writing preset are installed in this project’s node_modules.');
   console.log('Starting the local editor. Open the URL printed by Vite. Press Ctrl+C to stop.');
   const server = await run('npm', ['run', 'dev']);
   process.exit(server.code || (server.signal ? 130 : 0));

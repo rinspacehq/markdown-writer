@@ -11,12 +11,12 @@
 从 GitHub Release 运行固定版本的发行包：
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz -- milkdown-writing-preset create my-milkdown-page
+npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.1/rinspacehq-milkdown-writing-preset-0.1.1.tgz -- milkdown-writing-preset create my-milkdown-page
 ```
 
-命令会创建新目录，安装示例所需的精确依赖，启动本地 Vite 服务并打印访问地址。已有目录不会被覆盖。要求 Node.js 20 或更新版本；按 Ctrl+C 停止服务。这只是本地预览，不会部署到公网。
+命令会创建带可编辑 React 源码的新目录，把 Milkdown Crepe、Milkdown Kit 和本预设安装在该目录自己的 `node_modules`，检查本地依赖，启动 Vite 服务并打印访问地址。生成的 `package-lock.json` 记录精确依赖树。已有目录不会被覆盖。要求 Node.js 20 或更新版本；按 Ctrl+C 停止服务。这只是本地预览，不会部署到公网。
 
-示例网页顶行是标题输入框，下面是 Milkdown 编辑器。可在 **Markdown source** 中粘贴或查看文档，点 **Import Markdown** 导入，点 **Export Markdown** 下载 `document.md`。在生成的目录运行 `npm run build` 会得到静态 `dist/`，可按自己的托管方式部署。
+示例网页顶行是标题输入框，下面是完成配置的 Milkdown 编辑器。页面启用 Crepe 的工具栏、块菜单、顶栏、LaTeX、代码编辑器、表格和链接控件，同时注册公开预设与数学、光标交互。点 **Insert formula** 可编辑 LaTeX 源码，即使预览失败也能继续修改源码。可在 **Markdown source** 中粘贴或查看文档，点 **Import Markdown** 导入，点 **Export Markdown** 下载 `document.md`。在生成的目录运行 `npm run build` 会得到静态 `dist/`，可按自己的托管方式部署。
 
 可在正文输入 `# 小节` 观察 H2，另起段落输入 `$$x^2$$` 生成显示公式，或依次输入 `| A | B |`、`| --- | --- |`、`| 1 | 2 |` 并以空行结束，生成表格。顶部标题字段与正文分开。
 
@@ -27,7 +27,7 @@ npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/r
 安装确定版本及兼容的 Milkdown peer 依赖：
 
 ```sh
-npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
+npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.1/rinspacehq-milkdown-writing-preset-0.1.1.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
 ```
 
 ```ts
@@ -58,7 +58,7 @@ await crepe.create();
 
 `splitTitleMarkdown` 把文首 H1 拆成 `{ title, body }`；`joinTitleMarkdown` 把标题作为文首 H1 写回。它们保留正文后续的标题。示例使用这两个函数与 `external` 模式。
 
-包还导出数学 Markdown 规范化与粘贴辅助函数。请从包根入口导入，不深层引用源码。显示公式快捷键会发出 `rinspace:open-latex-block-editor` 事件，内容为 `{ requestId, pos }`；宿主可以据此打开自有公式面板。基础示例使用 Crepe 自带的编辑界面。
+包还导出数学 Markdown 规范化与粘贴辅助函数。请从包根入口导入，不深层引用源码。显示公式快捷键会发出 `rinspace:open-latex-block-editor` 事件，内容为 `{ requestId, pos }`；生成的页面已将它接入本地公式编辑面板。
 
 Rinspace 使用的 DOM 生命周期可从 `@rinspacehq/milkdown-writing-preset/interactions` 导入 `createWritingInteractions`、`createMathReparseController`、数学命令和 `syncLatexCodeBlockElement`。这个可选入口需要 `katex` peer 依赖。宿主提供自己的公式面板回调、文案、只读状态和编辑器引用；Quiver 留在 Rinspace 适配层。
 

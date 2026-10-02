@@ -11,12 +11,12 @@ Use an exact reviewed release. Do not install `latest` or a Git branch into prod
 Download and run the versioned package from the GitHub Release:
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz -- milkdown-writing-preset create my-milkdown-page
+npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.1/rinspacehq-milkdown-writing-preset-0.1.1.tgz -- milkdown-writing-preset create my-milkdown-page
 ```
 
-The command creates a new directory, installs exact demo dependencies, starts a local Vite server, and prints its URL. It refuses to overwrite an existing directory. Node.js 20 or newer is required. Stop the server with Ctrl+C. This starts a local preview; it does not publish a website.
+The command creates a new directory with editable React source, installs Milkdown Crepe, Milkdown Kit and this preset into that directory's own `node_modules`, checks those local installations, starts a local Vite server, and prints its URL. The generated `package-lock.json` records the exact dependency tree. It refuses to overwrite an existing directory. Node.js 20 or newer is required. Stop the server with Ctrl+C. This starts a local preview; it does not publish a website.
 
-The page has a title input on top and a Milkdown editor below. Use **Markdown source** to paste or inspect a document, **Import Markdown** to load it, and **Export Markdown** to download `document.md`. To build a static site from the generated directory, run `npm run build`; deploy its `dist/` directory with your own hosting setup.
+The page has a title input on top and a configured Milkdown editor below. It enables Crepe's toolbar, block controls, top bar, LaTeX, code editor, tables and link controls, then registers the public preset and its math/cursor interaction lifecycle. **Insert formula** opens a local LaTeX source editor; formula editing stays possible if preview rendering fails. Use **Markdown source** to paste or inspect a document, **Import Markdown** to load it, and **Export Markdown** to download `document.md`. To build a static site from the generated directory, run `npm run build`; deploy its `dist/` directory with your own hosting setup.
 
 Try `# Section` in the editor body to see an H2, `$$x^2$$` at the start of a new paragraph for a display formula, or type `| A | B |`, `| --- | --- |`, `| 1 | 2 |` on successive lines followed by a blank line for a table. The title field remains separate from the body.
 
@@ -27,7 +27,7 @@ For a candidate tarball, pass `--package-spec file:/absolute/path/to/candidate.t
 Install an exact release together with compatible Milkdown peers:
 
 ```sh
-npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
+npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.1/rinspacehq-milkdown-writing-preset-0.1.1.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
 ```
 
 ```ts
@@ -58,7 +58,7 @@ Import the Crepe theme CSS in your app. Enable Crepe's LaTeX, CodeMirror and Tab
 
 `splitTitleMarkdown` reads a leading Markdown H1 into `{ title, body }`; `joinTitleMarkdown` writes the title as the document's leading H1. They leave later body headings intact. The demo uses these helpers and `titleMode: 'external'`.
 
-The package also exports math Markdown normalization and paste helpers. Use the documented package root export, not internal source paths. The display math shortcut emits `rinspace:open-latex-block-editor` with `{ requestId, pos }`; a host may listen for it to open its own formula panel. The basic demo relies on Crepe's built-in editing UI.
+The package also exports math Markdown normalization and paste helpers. Use the documented package root export, not internal source paths. The display math shortcut emits `rinspace:open-latex-block-editor` with `{ requestId, pos }`; the generated host connects it to a local formula panel.
 
 For the DOM lifecycle used by Rinspace, import `createWritingInteractions`, `createMathReparseController`, the math commands and `syncLatexCodeBlockElement` from `@rinspacehq/milkdown-writing-preset/interactions`. This optional entry needs `katex` as a peer. The host supplies its own formula panel callbacks, labels, read-only state and editor refs; Quiver stays in the Rinspace adapter.
 
