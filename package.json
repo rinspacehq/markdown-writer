@@ -1,6 +1,6 @@
 {
   "name": "@rinspacehq/milkdown-writing-preset",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Milkdown writing enhancements for math, tables, cursor flow and headings",
   "license": "MIT",
   "type": "module",
