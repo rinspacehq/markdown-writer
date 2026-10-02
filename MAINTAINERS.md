@@ -1,6 +1,6 @@
 # Ownership and release policy
 
-The `rinspacehq` organization maintains the proposed `rinspacehq/markdown-writer` repository and `@rinspacehq/markdown-writer` package. Milkdown and Crepe remain upstream projects; Rinspace owns only its original page, adapters, and writing enhancements. The package is the editable source for the public writing surface. Rinspace's private product consumes an exact reviewed release and owns account, upload, Quiver, draft, save, and publication adapters.
+The `rinspacehq` organization maintains the `rinspacehq/markdown-writer` repository and `@rinspacehq/markdown-writer` package. Milkdown and Crepe remain upstream projects; Rinspace owns only its original page, adapters, and writing enhancements. The package is the editable source for the public writing surface. Rinspace's private product consumes an exact reviewed release and owns account, upload, Quiver, draft, save, and publication adapters.
 
 The repository rename from `rinspacehq/milkdown-writing-preset` and the first `v0.2.0` release are coordinated with a private integration change. Keep the old `v0.1.x` package and release assets available for existing consumers. Do not republish old assets under new bytes.
 

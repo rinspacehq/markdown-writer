@@ -8,7 +8,7 @@
 
 ## 运行页面
 
-下一版本为 `v0.2.0`。GitHub Release 发布后，一条命令会创建本地 React 项目、安装精确版本的包并启动 Vite：
+`v0.2.0` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
 
 ```sh
 npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.2.0/rinspacehq-markdown-writer-0.2.0.tgz -- markdown-writer create my-markdown-writer
