@@ -8,7 +8,7 @@ The public title field and Milkdown editor are the source used by Rinspace's `/w
 
 ## Run the page
 
-The next release is `v0.2.0`. After its GitHub Release is published, one command creates a local React project, installs its exact package version, and starts Vite:
+The `v0.2.0` GitHub Release provides one command to create a local React project, install its exact package version, and start Vite:
 
 ```sh
 npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.2.0/rinspacehq-markdown-writer-0.2.0.tgz -- markdown-writer create my-markdown-writer
