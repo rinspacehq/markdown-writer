@@ -39,7 +39,8 @@ for (const filename of ['main.tsx', 'style.css']) {
 }
 const project = JSON.parse(readFileSync(resolve(template, 'package.json'), 'utf8'));
 project.name = basename(target).toLowerCase().replace(/[^a-z0-9-]/g, '-') || 'milkdown-writing-demo';
-project.dependencies[packageInfo.name] = specIndex >= 0 ? args[specIndex + 1] : packageInfo.version;
+const releaseAssetUrl = `https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v${packageInfo.version}/rinspacehq-milkdown-writing-preset-${packageInfo.version}.tgz`;
+project.dependencies[packageInfo.name] = specIndex >= 0 ? args[specIndex + 1] : releaseAssetUrl;
 writeFileSync(resolve(target, 'package.json'), `${JSON.stringify(project, null, 2)}\n`);
 console.log(`Created ${target}`);
 

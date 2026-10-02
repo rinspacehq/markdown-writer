@@ -8,10 +8,10 @@
 
 ## 一条命令打开本地示例
 
-`0.1.0` 发布后，运行：
+从 GitHub Release 运行固定版本的发行包：
 
 ```sh
-npm exec --yes --package=@rinspacehq/milkdown-writing-preset@0.1.0 -- milkdown-writing-preset create my-milkdown-page
+npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz -- milkdown-writing-preset create my-milkdown-page
 ```
 
 命令会创建新目录，安装示例所需的精确依赖，启动本地 Vite 服务并打印访问地址。已有目录不会被覆盖。要求 Node.js 20 或更新版本；按 Ctrl+C 停止服务。这只是本地预览，不会部署到公网。
@@ -27,7 +27,7 @@ npm exec --yes --package=@rinspacehq/milkdown-writing-preset@0.1.0 -- milkdown-w
 安装确定版本及兼容的 Milkdown peer 依赖：
 
 ```sh
-npm install --save-exact @rinspacehq/milkdown-writing-preset@0.1.0 @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
+npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
 ```
 
 ```ts
@@ -64,7 +64,7 @@ Rinspace 使用的 DOM 生命周期可从 `@rinspacehq/milkdown-writing-preset/i
 
 ## 开发与验收
 
-在候选源码目录运行 `npm run build` 和 `npm pack --dry-run`。正式发行前，要在干净项目和 Rinspace 文章、书籍两个编辑器中安装同一 tarball 测试。发行物使用经过审查的不可变版本；Rinspace 只通过精确依赖版本和锁文件升级，并运行集成检查。
+在源码目录运行 `npm run build` 和 `npm pack --dry-run`。正式发行前，要在干净项目和 Rinspace 文章、书籍两个编辑器中安装同一 tarball 测试。固定版本的 `.tgz` 与 SHA-256 校验文件一起附在不可变的 GitHub Release 中；Rinspace 通过精确发行包 URL 和锁文件 integrity 升级，并运行集成检查。不要安装 GitHub 自动生成的源码压缩包，它不是已构建的包。
 
 ## 范围与协议
 
