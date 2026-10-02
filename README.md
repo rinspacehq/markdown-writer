@@ -1,71 +1,52 @@
-# Milkdown Writing Preset
+# Rinspace Markdown Writer
 
 [简体中文](README.zh-CN.md)
 
-Eight small Milkdown plugins from Rinspace that improve Markdown writing: heading input, LaTeX code block cursor flow, display math fences and shortcuts, and typed Markdown tables. Each plugin has its own source file. One `registerWritingEnhancements` call installs them in the tested order.
+This writing page is built with [Milkdown](https://github.com/Milkdown/milkdown) and its Crepe editor. Milkdown supplies the editor framework and built-in editing features. Rinspace maintains the page shell, the integration code, and eight writing enhancements for headings, math, tables, and cursor behavior. We credit Milkdown and the other upstream projects in [License and attribution](#license-and-attribution).
 
-Use an exact reviewed release. Do not install `latest` or a Git branch into production.
+The public title field and Milkdown editor are the source used by Rinspace's `/write/markdown` page. The website adds account-bound controls through private adapters: tags, cover upload, image storage, Quiver, drafts, saving, and publishing. The generated page runs the public source directly, so a contributor can see a change in the same retained writing surface that Rinspace consumes.
 
-## One-command local demo
+## Run the page
 
-Download and run the versioned package from the GitHub Release:
-
-```sh
-npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.3/rinspacehq-milkdown-writing-preset-0.1.3.tgz -- milkdown-writing-preset create my-milkdown-page
-```
-
-The command creates a new directory with editable React source, installs Milkdown Crepe, Milkdown Kit and this preset into that directory's own `node_modules`, checks those local installations, starts a local Vite server, and prints its URL. The generated `package-lock.json` records the exact dependency tree. It refuses to overwrite an existing directory. Node.js 20 or newer is required. Stop the server with Ctrl+C. This starts a local preview; it does not publish a website.
-
-The page opens with an empty document: a title field above the configured Milkdown editor. It enables Crepe's toolbar, block controls, top bar, LaTeX, code editor, tables and link controls, then registers the public preset and its math/cursor interaction lifecycle. The ∑ control in the editor toolbar opens a local LaTeX source editor; formula editing stays possible if preview rendering fails. The demo has no local file import, export, Markdown source box, or publication flow. To build a static site from the generated directory, run `npm run build`; deploy its `dist/` directory with your own hosting setup.
-
-Try `# Section` in the editor body to see an H2, `$$x^2$$` at the start of a new paragraph for a display formula, or type `| A | B |`, `| --- | --- |`, `| 1 | 2 |` on successive lines followed by a blank line for a table. The title field remains separate from the body.
-
-For a candidate tarball, pass `--package-spec file:/absolute/path/to/candidate.tgz` after the directory name. Add `--no-install` to generate files without installing or starting the server.
-
-## Use in an existing editor
-
-Install an exact release together with compatible Milkdown peers:
+The next release is `v0.2.0`. After its GitHub Release is published, one command creates a local React project, installs its exact package version, and starts Vite:
 
 ```sh
-npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.3/rinspacehq-milkdown-writing-preset-0.1.3.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
+npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.2.0/rinspacehq-markdown-writer-0.2.0.tgz -- markdown-writer create my-markdown-writer
 ```
 
-```ts
-import { Crepe } from '@milkdown/crepe';
-import { registerWritingEnhancements } from '@rinspacehq/milkdown-writing-preset';
+Node.js 20 or newer is required. The command refuses to overwrite an existing directory and prints the local URL. Stop it with Ctrl+C. To make static files, run `npm run build` in the generated directory and host `dist/` yourself. This command does not deploy a website.
 
-const crepe = new Crepe({ root: document.getElementById('editor')! });
-registerWritingEnhancements(crepe, { titleMode: 'first-block' });
-await crepe.create();
+To try a reviewed candidate before release:
+
+```sh
+npm ci
+npm run build
+npm pack
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/absolute/path/to/rinspacehq-markdown-writer-0.2.0.tgz
 ```
 
-Import the Crepe theme CSS in your app. Enable Crepe's LaTeX, CodeMirror and Table features for the full demo behavior. The preset adds input and cursor behavior; it does not replace those Milkdown features or provide persistence, uploads or a publication service.
+The page contains the article title, the Milkdown writing surface, its toolbar, fullscreen control, and the same LaTeX editing panel. It opens with an empty document. It does not ask for a Rinspace account or contact Rinspace services. The page has no tag picker, cover upload, image upload, Quiver, save, publish, local file import, or Markdown source panel.
 
-### Included plugins
+## Shared source and public API
 
-| Plugin | Behavior |
-| --- | --- |
-| Heading input | Converts typed body `# ` to H2 according to the title mode. |
-| LaTeX gap cursor | Enables a cursor beside LaTeX code blocks. |
-| LaTeX trailing config | Avoids an unwanted trailing block after LaTeX. |
-| LaTeX trailing placeholder | Adds a writable paragraph after a final LaTeX block. |
-| Display math fence merge | Converts typed paired display math fences into one LaTeX block. |
-| Markdown table input | Converts typed pipe rows with a separator into a table. |
-| Display math shortcut | Handles `$$` and `$$$$` shortcuts and emits the LaTeX block open event. |
-| Single-line display math | Converts `$$formula$$` to a LaTeX block and guards inline `$formula$`. |
+The package exports the production writing pieces from `@rinspacehq/markdown-writer/writer`:
 
-`titleMode: 'first-block'` preserves Rinspace's existing rule: the first editor block may be H1; later typed H1 markers become H2. `titleMode: 'external'` is for a separate title field and converts typed H1 markers in every body block. The input rule does not rewrite headings already present in a document.
+- `WriterTitleField` and `WriterEditorFrame` render the retained page controls.
+- `createWriterEditor` creates Crepe with the same feature and plugin configuration. A host can add private controls through `extendTopBar` and supply an image upload adapter; the public page leaves both unset.
+- `syncWriterTitle` and the Markdown title helpers keep the document title aligned with its first H1.
+- `applyWriterTopBarLabels` gives the toolbar accessible names.
+- `@rinspacehq/markdown-writer/writer.css` contains the writing surface styles extracted from the Rinspace page.
 
-`splitTitleMarkdown` reads a leading Markdown H1 into `{ title, body }`; `joinTitleMarkdown` writes the title as the document's leading H1. They leave later body headings intact and are available to hosts that handle full Markdown documents. The one-command demo uses `titleMode: 'external'` but does not call these helpers or provide file import or export.
+`@rinspacehq/markdown-writer/latex-editor` exports the LaTeX block panel and its selection lifecycle. `@rinspacehq/markdown-writer/code-editor` exports the shared CodeMirror control. The package root exports the eight writing plugins and Markdown helpers; `/interactions` exports the cursor, paste, math, and reparse lifecycle. Use these documented entries rather than internal files.
 
-The package also exports math Markdown normalization and paste helpers. Use the documented package root export, not internal source paths. The display math shortcut emits `rinspace:open-latex-block-editor` with `{ requestId, pos }`; the generated host connects it to a local formula panel.
+Milkdown Crepe's LaTeX, CodeMirror, Table, Toolbar, BlockEdit, TopBar, and LinkTooltip features remain Milkdown features. The eight Rinspace plugins add the tested input and cursor behaviors. The public page and Rinspace register them through the same `createWriterEditor` function.
 
-For the DOM lifecycle used by Rinspace, import `createWritingInteractions`, `createMathReparseController`, the math commands and `syncLatexCodeBlockElement` from `@rinspacehq/milkdown-writing-preset/interactions`. This optional entry needs `katex` as a peer. The host supplies its own formula panel callbacks, labels, read-only state and editor refs; Quiver stays in the Rinspace adapter.
+## Contributing and releases
 
-## Development and checks
+Run `npm ci`, `npm run build`, `npm test`, and `npm pack --dry-run`. Test the packed tarball in a clean generated page. Changes to the page must also pass Rinspace's Markdown article and book editor integration checks against that exact tarball. A public change enters the product only after maintainer review, an immutable GitHub Release, and a private dependency update pinned to the release asset and lockfile integrity. Rinspace does not consume `main` or `latest` in production.
 
-In the source directory, run `npm run build` and `npm pack --dry-run`. Test the packed tarball in a clean project and in both Rinspace article and book editors before a release. The versioned `.tgz` is attached to an immutable GitHub Release alongside its SHA-256 checksum. Rinspace upgrades by changing the exact release asset URL and lockfile integrity, then running its integration checks. Do not install the repository's generated source archive: it is not the built package.
+The former `@rinspacehq/milkdown-writing-preset` `v0.1.x` releases remain historical plugin-only packages. `@rinspacehq/markdown-writer` starts the page-owning package line at `v0.2.0`; consumers of the earlier package must update their import paths deliberately.
 
-## Scope and license
+## License and attribution
 
-The package contains no Rinspace account, API, Quiver, image upload, autosave or publication code. Its own source, example and creator are MIT licensed; see [LICENSE](LICENSE). Milkdown, Crepe, CodeMirror, KaTeX and any third-party assets retain their own licenses. Contributions require review and do not flow automatically into Rinspace.
+Rinspace's original page code, plugins, example, and creator in this repository are MIT licensed; see [LICENSE](LICENSE). [Milkdown and Crepe](https://github.com/Milkdown/milkdown) are maintained by the Milkdown project and retain their own MIT license and attribution. CodeMirror, KaTeX, and other dependencies retain their respective licenses. This repository does not claim ownership of Milkdown or its built-in editor features.

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 const packageRoot = fileURLToPath(new URL('..', import.meta.url));
 const args = process.argv.slice(2);
 if (args.includes('--help') || args.includes('-h')) {
-  console.log('Usage: milkdown-writing-preset create [directory] [--no-install] [--package-spec spec]');
+  console.log('Usage: markdown-writer create [directory] [--no-install] [--package-spec spec]');
   process.exit(0);
 }
 if (args[0] !== 'create') {
@@ -18,7 +18,7 @@ if (args[0] !== 'create') {
 
 const targetArg = args.find((arg, index) =>
   index > 0 && !arg.startsWith('--') && args[index - 1] !== '--package-spec',
-) || 'milkdown-writing-demo';
+) || 'markdown-writer-demo';
 const target = resolve(process.cwd(), targetArg);
 if (existsSync(target)) {
   console.error(`Directory already exists: ${target}`);
@@ -36,13 +36,13 @@ mkdirSync(resolve(target, 'src'), { recursive: true });
 for (const filename of ['index.html', 'tsconfig.json']) {
   copyFileSync(resolve(template, filename), resolve(target, filename));
 }
-for (const filename of ['main.tsx', 'style.css']) {
+for (const filename of ['main.tsx']) {
   copyFileSync(resolve(template, 'src', filename), resolve(target, 'src', filename));
 }
 const project = JSON.parse(readFileSync(resolve(template, 'package.json'), 'utf8'));
-project.name = basename(target).toLowerCase().replace(/[^a-z0-9-]/g, '-') || 'milkdown-writing-demo';
+project.name = basename(target).toLowerCase().replace(/[^a-z0-9-]/g, '-') || 'markdown-writer-demo';
 project.version = packageInfo.version;
-const releaseAssetUrl = `https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v${packageInfo.version}/rinspacehq-milkdown-writing-preset-${packageInfo.version}.tgz`;
+const releaseAssetUrl = `https://github.com/rinspacehq/markdown-writer/releases/download/v${packageInfo.version}/rinspacehq-markdown-writer-${packageInfo.version}.tgz`;
 project.dependencies[packageInfo.name] = specIndex >= 0 ? args[specIndex + 1] : releaseAssetUrl;
 writeFileSync(resolve(target, 'package.json'), `${JSON.stringify(project, null, 2)}\n`);
 console.log(`Created ${target}`);
@@ -69,7 +69,7 @@ try {
       throw new Error(`Missing local dependency: ${dependency}. Run npm install in ${target}.`);
     }
   }
-  console.log('Milkdown and the writing preset are installed in this project’s node_modules.');
+  console.log('Milkdown and the Rinspace Markdown writer are installed in this project’s node_modules.');
   console.log('Starting the local editor. Open the URL printed by Vite. Press Ctrl+C to stop.');
   const server = await run('npm', ['run', 'dev']);
   process.exit(server.code || (server.signal ? 130 : 0));

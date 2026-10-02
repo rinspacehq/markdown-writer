@@ -19,6 +19,13 @@ export {
 export { rinLatexBlockOpenEvent, type RinLatexBlockOpenRequest } from './mathEvents';
 export { joinTitleMarkdown, splitTitleMarkdown } from './titleMarkdown';
 export {
+  firstMarkdownHeading,
+  markdownWithTitle,
+  markdownWithoutDefaultTemplate,
+  markdownWithoutMatchingTitle,
+  sanitizeMarkdownSource,
+} from './markdownTitle';
+export {
   insertLatexPlaceholderParagraph,
   isLatexCodeBlockNode,
   selectAfterBlock,

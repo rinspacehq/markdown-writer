@@ -1,71 +1,52 @@
-# Milkdown 写作增强预设
+# Rinspace Markdown Writer
 
 [English](README.md)
 
-这是从 Rinspace 提取的八个 Milkdown 小插件，改善 Markdown 的标题、LaTeX 代码块光标、显示公式围栏与快捷键、表格输入。每个插件有独立源码文件，`registerWritingEnhancements` 按验证过的顺序一次注册。
+这个写作页面基于 [Milkdown](https://github.com/Milkdown/milkdown) 及其 Crepe 编辑器。编辑器框架和内建编辑功能来自 Milkdown；Rinspace 维护页面外壳、接入代码，以及针对标题、数学、表格和光标行为的八项写作增强。上游项目与许可证见[协议与致谢](#协议与致谢)。
 
-请使用经过审查的精确版本；生产环境不要消费 `latest` 或 Git 分支。
+公开的标题字段和 Milkdown 编辑器是 Rinspace `/write/markdown` 实际消费的源码。网站通过私有适配器接入账号相关控件：标签、封面上传、图片存储、Quiver、草稿、保存和发布。一键生成的页面直接运行公开源码，贡献者因此可以在与 Rinspace 共用的写作区域验证改动。
 
-## 一条命令打开本地示例
+## 运行页面
 
-从 GitHub Release 运行固定版本的发行包：
-
-```sh
-npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.3/rinspacehq-milkdown-writing-preset-0.1.3.tgz -- milkdown-writing-preset create my-milkdown-page
-```
-
-命令会创建带可编辑 React 源码的新目录，把 Milkdown Crepe、Milkdown Kit 和本预设安装在该目录自己的 `node_modules`，检查本地依赖，启动 Vite 服务并打印访问地址。生成的 `package-lock.json` 记录精确依赖树。已有目录不会被覆盖。要求 Node.js 20 或更新版本；按 Ctrl+C 停止服务。这只是本地预览，不会部署到公网。
-
-示例打开时是一篇空白文档：顶部标题，下方是完成配置的 Milkdown 编辑器。页面启用 Crepe 的工具栏、块菜单、顶栏、LaTeX、代码编辑器、表格和链接控件，同时注册公开预设与数学、光标交互。点编辑器工具栏中的 ∑ 可编辑 LaTeX 源码，即使预览失败也能继续修改源码。示例不提供本地文件导入、导出、Markdown 源码框或发布流程。在生成的目录运行 `npm run build` 会得到静态 `dist/`，可按自己的托管方式部署。
-
-可在正文输入 `# 小节` 观察 H2，另起段落输入 `$$x^2$$` 生成显示公式，或依次输入 `| A | B |`、`| --- | --- |`、`| 1 | 2 |` 并以空行结束，生成表格。顶部标题字段与正文分开。
-
-验证候选 tarball 时，可在目录名后加 `--package-spec file:/绝对路径/candidate.tgz`。加 `--no-install` 则只生成文件，不安装和启动。
-
-## 接入现有编辑器
-
-安装确定版本及兼容的 Milkdown peer 依赖：
+下一版本为 `v0.2.0`。GitHub Release 发布后，一条命令会创建本地 React 项目、安装精确版本的包并启动 Vite：
 
 ```sh
-npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.3/rinspacehq-milkdown-writing-preset-0.1.3.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
+npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.2.0/rinspacehq-markdown-writer-0.2.0.tgz -- markdown-writer create my-markdown-writer
 ```
 
-```ts
-import { Crepe } from '@milkdown/crepe';
-import { registerWritingEnhancements } from '@rinspacehq/milkdown-writing-preset';
+需要 Node.js 20 或更新版本。命令不会覆盖已有目录，会打印本地地址；按 Ctrl+C 停止。在生成目录运行 `npm run build` 可得到 `dist/` 静态文件，再由你自行托管。上述命令不会把页面发布到公网。
 
-const crepe = new Crepe({ root: document.getElementById('editor')! });
-registerWritingEnhancements(crepe, { titleMode: 'first-block' });
-await crepe.create();
+发行前验证候选包可执行：
+
+```sh
+npm ci
+npm run build
+npm pack
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.2.0.tgz
 ```
 
-宿主还需引入 Crepe 主题 CSS。要获得示例中的完整体验，请启用 Crepe 自带的 LaTeX、CodeMirror、Table 功能。本预设增强输入和光标行为；不负责持久化、上传或发布。
+页面保留文章标题、Milkdown 写作区域、工具栏、全屏控件和同源的 LaTeX 编辑面板，默认打开空白文档。它不要求 Rinspace 账号，也不访问 Rinspace 服务。页面没有标签选择、封面上传、图片上传、Quiver、保存、发布、本地文件导入或 Markdown 源码框。
 
-### 八个插件
+## 同源代码与公开接口
 
-| 插件 | 行为 |
-| --- | --- |
-| 标题输入 | 按标题模式把正文中输入的 `# ` 转为 H2。 |
-| LaTeX GapCursor | 允许在 LaTeX 代码块旁放置光标。 |
-| LaTeX 尾部配置 | 避免 LaTeX 后自动附加多余块。 |
-| LaTeX 尾部占位 | 在文末 LaTeX 块后增加可继续输入的段落。 |
-| 显示公式围栏合并 | 把成对输入的显示公式围栏合并为 LaTeX 块。 |
-| Markdown 表格输入 | 把含分隔行的管道文本转换成表格。 |
-| 显示公式快捷键 | 处理 `$$` 与 `$$$$`，并发出打开公式块事件。 |
-| 单行显示公式 | 将 `$$formula$$` 转为 LaTeX 块，同时保护行内 `$formula$`。 |
+`@rinspacehq/markdown-writer/writer` 导出产品写作区域的共同代码：
 
-`titleMode: 'first-block'` 保持 Rinspace 现有行为：编辑器首块可以是 H1，后续输入的 H1 变为 H2。页面顶部有独立标题字段时用 `titleMode: 'external'`，正文任何位置输入的 H1 都会变为 H2。输入规则不会重写文档中已有的标题。
+- `WriterTitleField` 和 `WriterEditorFrame` 渲染标题与编辑器边框。
+- `createWriterEditor` 以同一份配置构造 Crepe 和写作插件。站内宿主可通过 `extendTopBar` 添加私有控件，并注入图片上传适配器；公开页面不传入这两项。
+- `syncWriterTitle` 和 Markdown 标题工具维护标题与文首 H1 的关系。
+- `applyWriterTopBarLabels` 为工具栏提供可访问名称。
+- `@rinspacehq/markdown-writer/writer.css` 包含从 Rinspace 写作页迁出的编辑区域样式。
 
-`splitTitleMarkdown` 把文首 H1 拆成 `{ title, body }`；`joinTitleMarkdown` 把标题作为文首 H1 写回。它们保留正文后续的标题，供需要处理完整 Markdown 文档的宿主调用。一键示例只使用 `external` 标题模式，不调用这两个函数，也不提供文件导入或导出。
+`/latex-editor` 导出同源 LaTeX 块面板和选区生命周期，`/code-editor` 导出共用的 CodeMirror 控件。包根入口提供八项写作插件和 Markdown 工具，`/interactions` 提供光标、粘贴、数学及重新解析逻辑。请使用这些公开入口，不要深层导入内部文件。
 
-包还导出数学 Markdown 规范化与粘贴辅助函数。请从包根入口导入，不深层引用源码。显示公式快捷键会发出 `rinspace:open-latex-block-editor` 事件，内容为 `{ requestId, pos }`；生成的页面已将它接入本地公式编辑面板。
+Milkdown Crepe 的 LaTeX、CodeMirror、Table、Toolbar、BlockEdit、TopBar 和 LinkTooltip 仍是 Milkdown 的内建功能。Rinspace 的八项插件增加经验证的输入与光标行为；公开页面和 Rinspace 都通过同一个 `createWriterEditor` 注册它们。
 
-Rinspace 使用的 DOM 生命周期可从 `@rinspacehq/milkdown-writing-preset/interactions` 导入 `createWritingInteractions`、`createMathReparseController`、数学命令和 `syncLatexCodeBlockElement`。这个可选入口需要 `katex` peer 依赖。宿主提供自己的公式面板回调、文案、只读状态和编辑器引用；Quiver 留在 Rinspace 适配层。
+## 贡献与发行
 
-## 开发与验收
+运行 `npm ci`、`npm run build`、`npm test`、`npm pack --dry-run`，再用打包后的 tarball 在干净目录验证一键页面。页面改动还须让 Rinspace 的 Markdown 文章和书籍编辑器对同一个 tarball 完成集成检查。公开改动只有经过维护者审查、不可变 GitHub Release 和私仓精确依赖及锁文件完整性更新后，才会进入产品。生产不消费 `main` 或 `latest`。
 
-在源码目录运行 `npm run build` 和 `npm pack --dry-run`。正式发行前，要在干净项目和 Rinspace 文章、书籍两个编辑器中安装同一 tarball 测试。固定版本的 `.tgz` 与 SHA-256 校验文件一起附在不可变的 GitHub Release 中；Rinspace 通过精确发行包 URL 和锁文件 integrity 升级，并运行集成检查。不要安装 GitHub 自动生成的源码压缩包，它不是已构建的包。
+原 `@rinspacehq/milkdown-writing-preset` 的 `v0.1.x` 发行版保留为历史插件包。`@rinspacehq/markdown-writer` 从 `v0.2.0` 开始维护页面；旧包使用者需要主动更新导入路径。
 
-## 范围与协议
+## 协议与致谢
 
-包中没有 Rinspace 账号、API、Quiver、图片上传、自动保存或发布代码。自有源码、示例和创建器采用 MIT 协议，见 [LICENSE](LICENSE)。Milkdown、Crepe、CodeMirror、KaTeX 及第三方素材各自保留原协议。外部贡献须经审查，不会自动同步进 Rinspace。
+本仓库中由 Rinspace 编写的页面代码、插件、示例和创建器采用 MIT 协议，见 [LICENSE](LICENSE)。[Milkdown 与 Crepe](https://github.com/Milkdown/milkdown) 由 Milkdown 项目维护，保留其 MIT 协议和归属。CodeMirror、KaTeX 等依赖也分别保留各自许可证。本仓库不声称拥有 Milkdown 或其内建编辑功能。

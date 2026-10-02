@@ -1,0 +1,171 @@
+/* Extracted from Rinspace ui/src/styles/product-families/creation.css at source commit 5e54f43f. */
+.rin-writer-demo {
+  --ink: #1b1b18;
+  --danger: #9d2f25;
+  --rin-ink: #1b1b18;
+  --rin-ink-muted: #718096;
+  --rin-surface: #fff;
+  --rin-canvas: #f8fafc;
+  --rin-border: #d9e2ed;
+  --rin-border-strong: #cbd5e1;
+  --rin-accent: #2b577a;
+  --rin-radius-md: 8px;
+  --rin-grid-max: 1600px;
+  --rin-mobile-page-gutter: 8px;
+  --rin-font-ui: Inter, "Noto Sans SC", sans-serif;
+  --rin-font-mono: "IBM Plex Mono", "Noto Sans Mono", monospace;
+  min-block-size: 100dvh;
+  background: var(--rin-canvas);
+  color: var(--rin-ink);
+  font-family: var(--rin-font-ui);
+}
+[data-rin-ui="v2"] .markdown-editor-fullscreen-toggle {
+  position: absolute;
+  z-index: 25;
+  inset-block-start: 7px;
+  inset-inline-end: 7px;
+  display: grid;
+  inline-size: 32px;
+  block-size: 32px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--rin-border) 82%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--rin-surface) 92%, transparent);
+  color: var(--rin-ink-muted);
+  cursor: pointer;
+}
+[data-rin-ui="v2"] .markdown-editor-fullscreen-toggle:hover {
+  border-color: var(--rin-accent);
+  background: var(--rin-surface);
+  color: var(--rin-accent);
+}
+[data-rin-ui="v2"] .markdown-editor-fullscreen-toggle:focus-visible {
+  outline: 2px solid var(--rin-accent);
+  outline-offset: 2px;
+}
+[data-rin-ui="v2"] .markdown-editor-fullscreen-toggle svg { inline-size: 18px; block-size: 18px; }
+.rin-writer-demo *, .rin-writer-demo *::before, .rin-writer-demo *::after { box-sizing: border-box; }
+.rin-writer-demo .rin-ui-field { display: grid; gap: .375rem; }
+.rin-writer-demo .rin-ui-field > label { font-weight: 650; }
+.rin-writer-demo .rin-compat-label { color: #334155; font-size: .72rem; font-weight: 750; letter-spacing: .015em; text-transform: uppercase; }
+.rin-writer-demo .rin-ui-control { inline-size: 100%; min-block-size: 2.75rem; border: 1px solid var(--rin-border-strong); border-radius: var(--rin-radius-md); background: var(--rin-surface); color: var(--rin-ink); padding: .625rem .75rem; font: inherit; }
+.rin-writer-demo .markdown-writer-shell { block-size: 100dvh; }
+@layer route-foundation {.writer-shell{display:grid;grid-template-columns:minmax(0, 1fr);grid-template-rows:auto minmax(0, 1fr);gap:8px;min-height:100vh;padding:8px clamp(8px,1.4vw,18px) 10px}.writer-publish-bar{display:grid;grid-template-columns:minmax(180px, 1fr) minmax(130px, 0.42fr) 150px max-content max-content;gap:8px;align-items:end;min-width:0;padding:8px;border:1px solid #e5e7eb;border-radius:8px;background:rgba(255,255,255,.96)}.markdown-writer-publish-bar{grid-template-columns:minmax(180px, 1fr) minmax(210px, 0.52fr) 150px max-content}.writer-title-field{min-width:0}.writer-publish-bar:not(.book-writer-publish-bar):not(.workspace-section-editor-bar)>.writer-title-field{grid-column:1}.writer-publish-bar>.primary-button{min-height:38px;align-self:end;justify-content:center;white-space:nowrap}.writer-publish-bar>.primary-button{width:86px;padding-right:12px;padding-left:12px}.writer-frame{min-width:0;padding:0;border:0;background:rgba(0,0,0,0)}.markdown-writer-frame{min-height:0}.milkdown-editor-host{height:calc(100vh - 106px);min-height:560px;overflow:auto;border:1px solid rgba(27,27,24,.22);border-radius:8px;background:#fff}.milkdown-editor-host .milkdown{min-height:100%}.milkdown-editor-host :is(.milkdown,.ProseMirror){color:var(--ink)}.milkdown-editor-host .milkdown *{box-sizing:border-box}.milkdown-editor-host .milkdown :is(button,input,textarea){min-height:0;border:0;border-radius:0;background:rgba(0,0,0,0);box-shadow:none;color:inherit;font:inherit;letter-spacing:0;text-transform:none}.milkdown-editor-host .milkdown :is(button,input,textarea):focus{outline:none}.milkdown-editor-host .milkdown :is(button,[role=button]){transform:none}.milkdown-editor-host .milkdown svg{display:block;flex:0 0 auto}.milkdown-editor-host .milkdown .milkdown-top-bar{display:flex;align-items:center;min-height:44px;padding:0 10px;border-bottom:1px solid rgba(15,23,42,.08);background:#f8fafc}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-inner{display:flex;width:100%;align-items:center;flex-wrap:wrap;gap:0}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-divider{width:1px;height:24px;flex:0 0 1px;margin:10px 8px;background:rgba(15,23,42,.12)}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-heading-selector{position:relative;flex:0 0 auto;padding:6px}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-heading-button{display:flex;width:auto;height:32px;align-items:center;gap:4px;padding:4px 6px 4px 10px;border-radius:6px;cursor:pointer}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-heading-label{display:block;min-width:78px;color:var(--ink);font-family:Inter,"Noto Sans SC",sans-serif;font-size:.86rem;font-weight:650;line-height:20px;white-space:nowrap}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-chevron, .milkdown-editor-host .milkdown .milkdown-icon{display:inline-flex;align-items:center;justify-content:center}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-chevron{width:22px;height:22px}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-item, .milkdown-editor-host .milkdown .milkdown-toolbar .toolbar-item{display:inline-flex;width:32px;height:32px;min-width:32px;align-items:center;justify-content:center;margin:6px 3px;padding:4px;border-radius:6px;cursor:pointer}.milkdown-editor-host .milkdown .milkdown-toolbar .toolbar-item:hover{background:rgba(15,23,42,.08)}.milkdown-editor-host .milkdown .milkdown-toolbar .toolbar-item:active{background:rgba(15,23,42,.13)}.milkdown-editor-host .milkdown .milkdown-toolbar .toolbar-item svg{width:20px;height:20px;color:rgba(44,62,80,.72);fill:currentColor}.milkdown-editor-host .milkdown .milkdown-top-bar .top-bar-item svg[viewBox="0 0 24 24"]{width:20px;height:20px}.milkdown-editor-host .milkdown .milkdown-toolbar{display:flex;position:absolute;z-index:20;overflow:hidden;border:1px solid rgba(15,23,42,.08);border-radius:8px;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,.14)}.milkdown-editor-host .milkdown .milkdown-toolbar[data-show=false]{display:none}.milkdown-editor-host .ProseMirror{min-height:520px;max-width:920px;margin:0 auto;padding:clamp(28px,4vw,58px) clamp(20px,5vw,72px);font-size:1rem;line-height:1.76}.milkdown-editor-host .ProseMirror:focus{outline:none}.milkdown-editor-host .milkdown-code-block{margin:18px 0}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block){overflow:hidden;border:1px solid rgba(15,23,42,.12);border-radius:8px;background:#f8fafc;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 28px rgba(15,23,42,.04)}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block) :is(.cm-editor,.cm-scroller,.cm-gutters){background:#f8fafc !important}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block) :is(.cm-content,.cm-line,code,pre){font-family:"JetBrains Mono","IBM Plex Mono","Noto Sans Mono",monospace;font-variant-ligatures:contextual}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block) .cm-content{padding:10px 0;caret-color:#2c3e50}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block) .cm-line{padding:0 18px}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block) .cm-activeLine{background:rgba(44,62,80,.035) !important}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block) .cm-gutters{border-right:1px solid rgba(15,23,42,.08);color:#94a3b8}.milkdown-editor-host .milkdown-code-block:not(.rin-latex-block) .cm-activeLineGutter{background:rgba(44,62,80,.035) !important;color:#4a5568}.milkdown-editor-host .milkdown-code-block .preview{overflow-x:auto;padding:14px 12px}.milkdown-editor-host .milkdown-code-block .preview .katex-display{margin:0}.milkdown-editor-host .milkdown-code-block .preview .katex{font-size:1.08em}.milkdown-editor-host .milkdown-code-block .katex-error{color:var(--danger);white-space:pre-wrap}.milkdown-editor-host .milkdown-code-block.rin-latex-block{margin:18px 0;padding:0;border:0;background:rgba(0,0,0,0);cursor:text}.milkdown-editor-host .milkdown-code-block.rin-latex-block.selected{outline:none}.milkdown-editor-host .milkdown-code-block.rin-latex-block .tools, .milkdown-editor-host .milkdown-code-block.rin-latex-block .language-picker, .milkdown-editor-host .milkdown-code-block.rin-latex-block .preview-divider, .milkdown-editor-host .milkdown-code-block.rin-latex-block .preview-label{display:none !important}.milkdown-editor-host .milkdown-code-block.rin-latex-block .codemirror-host{display:none}.milkdown-editor-host .milkdown-code-block.rin-latex-block .preview-panel{display:block}.milkdown-editor-host .milkdown-code-block.rin-latex-block.rin-latex-editing .preview-panel{opacity:.28;pointer-events:none}.milkdown-editor-host .milkdown-code-block.rin-latex-block.rin-latex-editing{min-height:190px}.milkdown-editor-host .milkdown-code-block.rin-latex-block .preview{min-height:48px;padding:12px 8px 16px;border-radius:6px;background:rgba(0,0,0,0);text-align:center}.milkdown-editor-host .milkdown-code-block.rin-latex-block .milkdown-code-block-placeholder{display:none}.milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-editor, .milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-scroller, .milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-gutters{background:rgba(0,0,0,0) !important}.milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-gutters{display:none}.milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-content{padding:0;color:var(--ink);font-family:"IBM Plex Mono","Noto Sans SC",monospace;font-size:.95rem;line-height:1.6}.milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-content *, .milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-line{color:var(--ink) !important}.milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-activeLine{background:rgba(0,0,0,0) !important}.milkdown-editor-host .milkdown-code-block.rin-latex-block .cm-line{padding:0 28px}.milkdown-editor-host span[data-type=math_inline]{display:inline-flex;max-width:100%;padding:0 3px;border-radius:4px;overflow-x:auto;overflow-y:hidden;cursor:text;vertical-align:-0.16em}.milkdown-editor-host span[data-type=math_inline]:hover{background:rgba(43,87,122,.1)}@media(max-width: 620px){.writer-shell{grid-template-columns:1fr;min-height:auto;padding:8px 10px 12px}.writer-publish-bar{grid-template-columns:repeat(2, minmax(0, 1fr));align-items:stretch}.writer-title-field{grid-column:1/-1}}.writer-publish-bar{border-color:rgba(15,23,42,.08);background:linear-gradient(180deg, var(--surface-strong), var(--surface)),var(--white);box-shadow:var(--shadow-paper)}.writer-publish-bar{border-radius:var(--radius-md)}.writer-shell{background:#f8fafc}.writer-publish-bar{border-color:#e5e7eb;background:rgba(255,255,255,.98)}.writer-frame{filter:drop-shadow(0 16px 38px rgba(15, 23, 42, 0.07))}.writer-publish-bar{border-color:rgba(15,23,42,.08);background:#fff;background-image:none;box-shadow:0 4px 6px rgba(10,10,10,.04)}.writer-publish-bar input{border-color:rgba(15,23,42,.1);background:#fff;color:#2c3e50}
+}
+
+/* Extracted from Rinspace ui/src/styles/migrated-pages.css at source commit 5e54f43f. */
+
+[data-rin-ui="v2"] .rin-app-frame:not([data-rin-ui-boundary="frozen"]) :where(.writer-shell) { inline-size: min(calc(100% - 2rem), var(--rin-grid-max)); margin-inline: auto; padding-block: clamp(1.5rem, 4vw, 4rem); }
+[data-rin-ui="v2"] .milkdown-editor-host .ProseMirror { max-inline-size: none; margin-inline: 0; }
+[data-rin-ui="v2"] .markdown-writer-shell {
+  block-size: calc(100vh - 64px);
+  block-size: calc(100dvh - 64px);
+  min-block-size: 0;
+  overflow: hidden;
+}
+[data-rin-ui="v2"] .markdown-writer-shell .milkdown-editor-host {
+  block-size: 100%;
+  min-block-size: 0;
+}
+[data-rin-ui="v2"] .markdown-writer-shell .milkdown-editor-host .milkdown {
+  block-size: auto;
+  min-block-size: 100%;
+  display: flex;
+  flex-direction: column;
+}
+[data-rin-ui="v2"] .markdown-writer-shell .milkdown-editor-host .ProseMirror {
+  flex: 1 0 auto;
+  min-block-size: 0;
+  box-sizing: border-box;
+}
+[data-rin-ui="v2"] .markdown-writer-publish-bar
+  .writer-title-field > .rin-ui-control {
+  block-size: 38px;
+  min-block-size: 38px;
+  padding-block: 0;
+}
+@media (max-width: 620px) {
+  [data-rin-ui="v2"] .markdown-writer-publish-bar {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+}
+[data-rin-ui="v2"] .markdown-writer-frame {
+  position: relative;
+}
+[data-rin-ui="v2"] .markdown-writer-frame .milkdown-editor-host .milkdown-top-bar {
+  padding-inline-end: 54px;
+}
+[data-rin-ui="v2"] .markdown-writer-frame.is-fullscreen {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  min-block-size: 0;
+  padding: 0;
+  border: 0;
+  background: var(--rin-canvas);
+}
+[data-rin-ui="v2"] .markdown-writer-frame.is-fullscreen .milkdown-editor-host {
+  block-size: 100%;
+  min-block-size: 0;
+  border: 0;
+  border-radius: 0;
+}
+@media (max-width: 480px) {
+  [data-rin-ui="v2"] .markdown-writer-frame .milkdown-top-bar .top-bar-item {
+    margin-inline: 2px;
+  }
+  [data-rin-ui="v2"] .markdown-writer-frame .milkdown-top-bar .top-bar-divider {
+    margin-inline: 4px;
+  }
+}
+@media (max-width: 48rem) {
+  [data-rin-ui="v2"] .rin-app-frame:not([data-rin-ui-boundary="frozen"]) :where(.writer-shell) {
+    inline-size: 100%;
+    padding-block: 1rem;
+    padding-inline-start: max(var(--rin-mobile-page-gutter), env(safe-area-inset-left, 0px));
+    padding-inline-end: max(var(--rin-mobile-page-gutter), env(safe-area-inset-right, 0px));
+  }
+}
+
+/* Rinspace production LaTeX editor panel styles. */
+@layer route-foundation {.rin-latex-editor-panel{position:absolute;z-index:170;display:grid;gap:7px;padding:10px 12px;border:1px solid rgba(43,87,122,.18);border-radius:8px;background:rgba(248,250,252,.98);box-shadow:0 14px 34px rgba(15,23,42,.12)}.rin-latex-editor-panel>span{color:rgba(43,87,122,.72);font-family:"IBM Plex Mono","Noto Sans SC",monospace;font-size:.82rem;font-weight:700;line-height:1}.rin-latex-editor-panel .code-editor .cm-editor{border:0;border-radius:0;background:rgba(0,0,0,0);box-shadow:none}.rin-latex-editor-panel .code-editor .cm-editor.cm-focused{border:0;box-shadow:none}.rin-latex-editor-panel .code-editor .cm-scroller, .rin-latex-editor-panel .code-editor .cm-gutters, .rin-latex-editor-panel .code-editor .cm-activeLine, .rin-latex-editor-panel .code-editor .cm-activeLineGutter{background:rgba(0,0,0,0) !important}.rin-latex-editor-panel .code-editor .cm-gutters{display:none}.rin-latex-editor-panel .code-editor .cm-content{padding:0;color:var(--ink);font-family:"IBM Plex Mono","Noto Sans SC",monospace;font-size:.95rem;line-height:1.6}.rin-latex-editor-panel .code-editor .cm-line{padding:0 28px}.rin-latex-editor-panel button{justify-self:end;min-height:30px;padding:0 10px;border:1px solid rgba(43,87,122,.2);border-radius:6px;background:#fff;color:var(--green);font-family:"IBM Plex Mono","Noto Sans SC",monospace;font-size:.76rem;font-weight:700}
+}
+
+/* Production toolbar tooltip styles. */
+
+[data-rin-ui="v2"] .milkdown-top-bar [data-rin-tooltip] {
+  position: relative;
+}
+[data-rin-ui="v2"] .milkdown-top-bar [data-rin-tooltip]::after {
+  position: absolute;
+  z-index: 60;
+  inset-block-start: calc(100% + 7px);
+  inset-inline-start: 50%;
+  max-inline-size: min(220px, calc(100vw - 24px));
+  padding: 5px 8px;
+  border: 1px solid color-mix(in srgb, var(--rin-border) 82%, transparent);
+  border-radius: 5px;
+  background: var(--rin-ink);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+  color: var(--rin-surface);
+  content: attr(data-rin-tooltip);
+  font-family: var(--rin-font-ui);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.25;
+  opacity: 0;
+  pointer-events: none;
+  translate: -50% -2px;
+  visibility: hidden;
+  white-space: nowrap;
+  transition:
+    opacity 120ms ease,
+    translate 120ms ease,
+    visibility 120ms ease;
+}
+[data-rin-ui="v2"] .milkdown-top-bar [data-rin-tooltip]:is(:hover, :focus-visible)::after {
+  opacity: 1;
+  translate: -50% 0;
+  visibility: visible;
+}
