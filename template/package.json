@@ -1,6 +1,6 @@
 {
-  "name": "milkdown-writing-demo",
-  "version": "0.1.0",
+  "name": "rinspace-markdown-writer-demo",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -11,7 +11,7 @@
   "dependencies": {
     "@milkdown/crepe": "7.21.2",
     "@milkdown/kit": "7.21.2",
-    "@rinspacehq/milkdown-writing-preset": "__PACKAGE_VERSION__",
+    "@rinspacehq/markdown-writer": "__PACKAGE_VERSION__",
     "katex": "0.16.25",
     "react": "19.2.8",
     "react-dom": "19.2.8"

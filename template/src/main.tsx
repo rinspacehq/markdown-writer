@@ -1,147 +1,182 @@
-import { Crepe, type CrepeConfig } from '@milkdown/crepe';
+import { type Crepe } from '@milkdown/crepe';
 import '@milkdown/crepe/theme/common/style.css';
 import '@milkdown/crepe/theme/frame.css';
-import { editorViewCtx } from '@milkdown/kit/core';
 import {
-  normalizeLatexBlockEditorValue, normalizeMilkdownMathMarkdown, registerWritingEnhancements,
-} from '@rinspacehq/milkdown-writing-preset';
+  firstMarkdownHeading,
+  markdownWithoutDefaultTemplate,
+  normalizeMilkdownMathMarkdown,
+} from '@rinspacehq/markdown-writer';
 import {
-  createMathReparseController, createWritingInteractions, insertLatexBlockInCtx,
-  latexBlockNodeInfo, updateLatexBlockNode,
-} from '@rinspacehq/milkdown-writing-preset/interactions';
+  createMathReparseController,
+  createWritingInteractions,
+  insertLatexBlockInCtx,
+} from '@rinspacehq/markdown-writer/interactions';
+import {
+  LatexBlockEditorPanel,
+  useLatexBlockEditor,
+} from '@rinspacehq/markdown-writer/latex-editor';
+import {
+  applyWriterTopBarLabels,
+  createWriterEditor,
+  syncWriterTitle,
+  WriterEditorFrame,
+  WriterTitleField,
+} from '@rinspacehq/markdown-writer/writer';
+import '@rinspacehq/markdown-writer/writer.css';
 import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import './style.css';
-
-const initialBody = '';
-type MathDraft = { pos: number; value: string };
 
 function App() {
   const hostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<Crepe | null>(null);
-  const markdownRef = useRef(initialBody);
+  const markdownRef = useRef('');
   const syncingRef = useRef(false);
   const readOnlyRef = useRef(false);
-  const [title, setTitle] = useState('Untitled document');
-  const [math, setMath] = useState<MathDraft | null>(null);
+  const skipNextMathReparseRef = useRef(false);
+  const titleRef = useRef('');
+  const [title, setTitle] = useState('');
   const [error, setError] = useState('');
+  const [editorReady, setEditorReady] = useState(false);
+  const {
+    editor: latexEditor,
+    editorHandleRef: latexEditorHandleRef,
+    closeEditor: closeLatexBlockEditor,
+    changeValue: changeLatexBlockValue,
+    submitAndContinue: submitLatexBlockAndContinue,
+    openEditorAtPos: openLatexBlockEditorAtPos,
+    openEditorFromFocus: openFocusedLatexBlockEditor,
+    openEditorFromPointer: openLatexBlockEditor,
+    openEditorFromShortcut,
+    openFocusedEditor: openNewFocusedLatexBlockEditor,
+  } = useLatexBlockEditor({
+    editorRef,
+    readOnlyRef,
+    skipNextMathReparseRef,
+    normalizeMarkdown: normalizeMilkdownMathMarkdown,
+    onCommit: (markdown) => { markdownRef.current = markdown; },
+  });
+
+  useEffect(() => {
+    if (!editorReady || !hostRef.current) return;
+    return applyWriterTopBarLabels(hostRef.current, {
+      toolbar: 'Markdown editing tools',
+      heading: 'Paragraph and heading',
+      items: [
+        'Bold', 'Italic', 'Strikethrough', 'Inline code', 'Bullet list',
+        'Ordered list', 'Task list', 'Link', 'Table', 'Code block',
+        'Quote', 'Horizontal rule', 'Math',
+      ],
+    });
+  }, [editorReady]);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
     let disposed = false;
-    const featureConfigs: NonNullable<CrepeConfig['featureConfigs']> = {
-      [Crepe.Feature.BlockEdit]: { textGroup: { h1: null }, advancedGroup: { math: null } },
-      [Crepe.Feature.Latex]: { katexOptions: { throwOnError: false, strict: false, trust: false } },
-      [Crepe.Feature.TopBar]: {
-        buildTopBar: (builder) => {
-          const mathItem = builder.getGroup('block').group.items.find((item) => item.key === 'math');
-          if (mathItem) {
-            mathItem.onRun = (ctx) => {
-              const pos = insertLatexBlockInCtx(ctx);
-              if (typeof pos === 'number') setMath({ pos, value: '' });
-            };
-          }
-        },
-      },
-      [Crepe.Feature.Placeholder]: { text: 'Start writing Markdown…', mode: 'block' },
-    };
-    const crepe = new Crepe({
-      root: host,
-      defaultValue: initialBody,
-      features: {
-        [Crepe.Feature.CodeMirror]: true, [Crepe.Feature.Latex]: true,
-        [Crepe.Feature.Toolbar]: true, [Crepe.Feature.BlockEdit]: true,
-        [Crepe.Feature.TopBar]: true, [Crepe.Feature.Table]: true,
-        [Crepe.Feature.LinkTooltip]: true, [Crepe.Feature.Placeholder]: true,
-        [Crepe.Feature.ImageBlock]: false,
-      },
-      featureConfigs,
-    });
-    // The title is a separate document field, so body H1 shortcuts become H2.
-    registerWritingEnhancements(crepe, { titleMode: 'external' });
     const reparse = createMathReparseController({ host, editorRef, markdownRef, syncingRef });
-    const openMathAt = (pos: number) => {
-      const draft = crepe.editor.action((ctx) => {
-        const node = ctx.get(editorViewCtx).state.doc.nodeAt(pos);
-        return node?.type.name === 'code_block' && String(node.attrs.language).toLowerCase() === 'latex'
-          ? { pos, value: node.textContent } : null;
-      });
-      if (draft) setMath(draft);
-      return Boolean(draft);
-    };
-    const openMathBlock = (block: HTMLElement) => {
-      const info = latexBlockNodeInfo(crepe, block);
-      if (info) setMath(info);
-    };
+    const editor = createWriterEditor({
+      root: host,
+      defaultValue: '',
+      headingOptions: [
+        { label: 'Paragraph', level: null },
+        ...([2, 3, 4, 5, 6] as const).map((level) => ({ label: `Heading ${level}`, level })),
+      ],
+      placeholder: false,
+      mathLabel: 'Math',
+      openMath: (ctx) => {
+        closeLatexBlockEditor();
+        reparse.clear();
+        skipNextMathReparseRef.current = true;
+        const pos = insertLatexBlockInCtx(ctx);
+        if (pos === false) {
+          skipNextMathReparseRef.current = false;
+          return;
+        }
+        window.requestAnimationFrame(() => {
+          if (openLatexBlockEditorAtPos(pos)) return;
+          window.setTimeout(() => { openLatexBlockEditorAtPos(pos); }, 50);
+        });
+      },
+    });
     const interactions = createWritingInteractions({
       host, editorRef, readOnlyRef, scheduleMathReparse: reparse.schedule,
-      openLatexFromPointer: (event) => {
-        const block = event.target instanceof Element ? event.target.closest('.rin-latex-block') : null;
-        if (!(block instanceof HTMLElement)) return;
-        event.preventDefault();
-        openMathBlock(block);
-      },
-      openLatexFromFocus: (event) => {
-        const block = event.target instanceof Element ? event.target.closest('.rin-latex-block') : null;
-        if (block instanceof HTMLElement) openMathBlock(block);
-      },
-      openLatexFromShortcut: (event) => {
-        if (!(event instanceof CustomEvent) || typeof event.detail?.pos !== 'number') return;
-        window.setTimeout(() => openMathAt(event.detail.pos), 0);
-      },
-      openFocusedLatex: () => {
-        const block = host.querySelector('.rin-latex-block .cm-focused')?.closest('.rin-latex-block');
-        if (!(block instanceof HTMLElement)) return false;
-        openMathBlock(block);
-        return true;
+      openLatexFromPointer: openLatexBlockEditor,
+      openLatexFromFocus: openFocusedLatexBlockEditor,
+      openLatexFromShortcut: (event) => openEditorFromShortcut(event, host),
+      openFocusedLatex: () => openNewFocusedLatexBlockEditor(host),
+      inlineMathLabels: {
+        ariaLabel: 'Inline math editor', save: 'Done', cancel: 'Cancel',
       },
     });
-    crepe.on((listener) => listener.markdownUpdated((_ctx, markdown) => {
-      const next = normalizeMilkdownMathMarkdown(markdown);
+    editor.on((listener) => listener.markdownUpdated((_ctx, markdown) => {
+      const next = normalizeMilkdownMathMarkdown(markdownWithoutDefaultTemplate(markdown));
       markdownRef.current = next;
-      if (!syncingRef.current) reparse.schedule(next);
+      if (syncingRef.current) return;
+      const headingTitle = firstMarkdownHeading(next);
+      if (headingTitle && headingTitle !== titleRef.current) {
+        titleRef.current = headingTitle;
+        setTitle(headingTitle);
+      }
+      if (skipNextMathReparseRef.current) {
+        skipNextMathReparseRef.current = false;
+        reparse.markHandled(next);
+        return;
+      }
+      reparse.schedule(next);
     }));
-    editorRef.current = crepe;
-    void crepe.create().then(() => { if (!disposed) interactions.attach(); })
-      .catch((reason: unknown) => {
-        if (!disposed) setError(reason instanceof Error ? reason.message : String(reason));
-      });
+    editorRef.current = editor;
+    void editor.create().then(() => {
+      if (disposed) return;
+      interactions.attach();
+      setEditorReady(true);
+    }).catch((reason: unknown) => {
+      if (!disposed) setError(reason instanceof Error ? reason.message : String(reason));
+    });
     return () => {
       disposed = true;
       interactions.destroy();
       reparse.clear();
+      closeLatexBlockEditor(false);
       editorRef.current = null;
-      void crepe.destroy();
+      void editor.destroy();
     };
   }, []);
 
-  const saveMath = () => {
-    const editor = editorRef.current;
-    if (!editor || !math) return;
-    if (!updateLatexBlockNode(editor, math.pos, normalizeLatexBlockEditorValue(math.value), true)) {
-      setError('The formula moved. Reopen it to save your changes.');
-      return;
-    }
-    setMath(null);
-    setError('');
+  const changeTitle = (value: string) => {
+    closeLatexBlockEditor();
+    titleRef.current = value;
+    setTitle(value);
+    if (editorReady) syncWriterTitle({ editor: editorRef.current, markdownRef, syncingRef, title: value });
   };
+
   return (
-    <main>
-      <header className="document-header">
-        <label className="visually-hidden" htmlFor="document-title">Title</label>
-        <input id="document-title" value={title} onChange={(event) => setTitle(event.target.value)} />
-      </header>
-      <div className="editor" ref={hostRef} aria-label="Markdown editor" />
-      {math && (
-        <section className="math-panel" aria-label="Edit LaTeX formula">
-          <label htmlFor="math-source">LaTeX formula</label>
-          <textarea id="math-source" value={math.value} onChange={(event) => setMath({ ...math, value: event.target.value })} />
-          <div className="actions"><button type="button" onClick={saveMath}>Save formula</button><button type="button" className="secondary" onClick={() => setMath(null)}>Cancel</button></div>
-        </section>
-      )}
-      {error && <p role="alert">{error}</p>}
-    </main>
+    <div className="rin-writer-demo" data-rin-ui="v2">
+      <div className="rin-app-frame">
+        <main className="writer-shell markdown-writer-shell">
+          <div className="writer-publish-bar markdown-writer-publish-bar">
+            <WriterTitleField title={title} label="Article title" onTitleChange={changeTitle} />
+          </div>
+          <WriterEditorFrame
+            hostRef={hostRef}
+            label="Markdown editor"
+            enterFullscreenLabel="Enter fullscreen editor"
+            exitFullscreenLabel="Exit fullscreen editor"
+            loading={editorReady ? null : <div role="status">Loading editor…</div>}
+          />
+          {latexEditor ? (
+            <LatexBlockEditorPanel
+              editor={latexEditor}
+              editorHandleRef={latexEditorHandleRef}
+              ariaLabel="Edit LaTeX formula"
+              doneLabel="Done"
+              onChange={changeLatexBlockValue}
+              onSubmit={submitLatexBlockAndContinue}
+            />
+          ) : null}
+          {error && <p role="alert">{error}</p>}
+        </main>
+      </div>
+    </div>
   );
 }
 

@@ -1,7 +1,7 @@
 {
-  "name": "@rinspacehq/milkdown-writing-preset",
-  "version": "0.1.3",
-  "description": "Milkdown writing enhancements for math, tables, cursor flow and headings",
+  "name": "@rinspacehq/markdown-writer",
+  "version": "0.2.0",
+  "description": "Rinspace's Milkdown Markdown writing page and writing enhancements",
   "license": "MIT",
   "type": "module",
   "files": [
@@ -20,25 +20,53 @@
     "./interactions": {
       "types": "./dist/interactions.d.ts",
       "import": "./dist/interactions.js"
+    },
+    "./writer": {
+      "types": "./dist/writer.d.ts",
+      "import": "./dist/writer.js"
+    },
+    "./writer.css": "./dist/writer.css",
+    "./latex-editor": {
+      "types": "./dist/LatexBlockEditor.d.ts",
+      "import": "./dist/latex-editor.js"
+    },
+    "./code-editor": {
+      "types": "./dist/CodeMirrorEditor.d.ts",
+      "import": "./dist/code-editor.js"
     }
   },
   "bin": {
-    "milkdown-writing-preset": "bin/create-demo.mjs"
+    "markdown-writer": "bin/create-demo.mjs"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && vite build --config vite.config.ts",
+    "build": "vite build --config vite.config.ts && tsc -p tsconfig.json",
     "test": "vitest run --pool forks --maxWorkers 1",
     "pack:check": "npm pack --dry-run"
   },
   "peerDependencies": {
     "@milkdown/crepe": "7.21.2",
     "@milkdown/kit": "7.21.2",
-    "katex": "^0.16.25"
+    "@codemirror/commands": "6.10.3",
+    "@codemirror/lang-markdown": "6.5.0",
+    "@codemirror/language": "6.12.3",
+    "@codemirror/state": "6.6.0",
+    "@codemirror/view": "6.43.1",
+    "@lezer/highlight": "1.2.3",
+    "katex": "^0.16.25",
+    "react": "^19.0.0"
   },
   "devDependencies": {
     "@milkdown/crepe": "7.21.2",
     "@milkdown/kit": "7.21.2",
+    "@codemirror/commands": "6.10.3",
+    "@codemirror/lang-markdown": "6.5.0",
+    "@codemirror/language": "6.12.3",
+    "@codemirror/state": "6.6.0",
+    "@codemirror/view": "6.43.1",
+    "@lezer/highlight": "1.2.3",
     "katex": "0.16.25",
+    "react": "19.2.8",
+    "@types/react": "19.2.18",
     "typescript": "5.9.3",
     "vite": "6.4.3",
     "vitest": "3.2.7"
@@ -48,11 +76,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rinspacehq/milkdown-writing-preset.git"
+    "url": "git+https://github.com/rinspacehq/markdown-writer.git"
   },
-  "homepage": "https://github.com/rinspacehq/milkdown-writing-preset#readme",
+  "homepage": "https://github.com/rinspacehq/markdown-writer#readme",
   "bugs": {
-    "url": "https://github.com/rinspacehq/milkdown-writing-preset/issues"
+    "url": "https://github.com/rinspacehq/markdown-writer/issues"
   },
   "keywords": [
     "milkdown",
