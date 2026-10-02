@@ -8,10 +8,10 @@ Use an exact reviewed release. Do not install `latest` or a Git branch into prod
 
 ## One-command local demo
 
-Once `0.1.0` is published, run:
+Download and run the versioned package from the GitHub Release:
 
 ```sh
-npm exec --yes --package=@rinspacehq/milkdown-writing-preset@0.1.0 -- milkdown-writing-preset create my-milkdown-page
+npm exec --yes --package=https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz -- milkdown-writing-preset create my-milkdown-page
 ```
 
 The command creates a new directory, installs exact demo dependencies, starts a local Vite server, and prints its URL. It refuses to overwrite an existing directory. Node.js 20 or newer is required. Stop the server with Ctrl+C. This starts a local preview; it does not publish a website.
@@ -27,7 +27,7 @@ For a candidate tarball, pass `--package-spec file:/absolute/path/to/candidate.t
 Install an exact release together with compatible Milkdown peers:
 
 ```sh
-npm install --save-exact @rinspacehq/milkdown-writing-preset@0.1.0 @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
+npm install --save-exact https://github.com/rinspacehq/milkdown-writing-preset/releases/download/v0.1.0/rinspacehq-milkdown-writing-preset-0.1.0.tgz @milkdown/crepe@7.21.2 @milkdown/kit@7.21.2 katex@0.16.25
 ```
 
 ```ts
@@ -64,7 +64,7 @@ For the DOM lifecycle used by Rinspace, import `createWritingInteractions`, `cre
 
 ## Development and checks
 
-In the candidate source directory, run `npm run build` and `npm pack --dry-run`. Test the packed tarball in a clean project and in both Rinspace article and book editors before a release. A release is an immutable reviewed package version; Rinspace upgrades by changing its exact dependency version and lockfile, then running its integration checks.
+In the source directory, run `npm run build` and `npm pack --dry-run`. Test the packed tarball in a clean project and in both Rinspace article and book editors before a release. The versioned `.tgz` is attached to an immutable GitHub Release alongside its SHA-256 checksum. Rinspace upgrades by changing the exact release asset URL and lockfile integrity, then running its integration checks. Do not install the repository's generated source archive: it is not the built package.
 
 ## Scope and license
 

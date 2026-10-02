@@ -54,7 +54,5 @@
   "bugs": {
     "url": "https://github.com/rinspacehq/milkdown-writing-preset/issues"
   },
-  "publishConfig": {
-    "access": "public"
-  }
+  "keywords": ["milkdown", "markdown", "editor", "math", "table"]
 }
