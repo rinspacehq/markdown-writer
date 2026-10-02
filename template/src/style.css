@@ -1,0 +1,15 @@
+:root { font-family: system-ui, sans-serif; color: #1f2937; background: #f6f7f8; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 900px; margin: 24px auto; padding: 24px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; }
+.title-label, .markdown-tools label { display: block; margin-bottom: 8px; font-size: .85rem; font-weight: 700; }
+#document-title { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font: 600 1.8rem system-ui, sans-serif; }
+.editor { margin-top: 18px; min-height: 320px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
+.editor .ProseMirror { min-height: 320px; padding: 20px; }
+.tip { margin: 10px 0 0; color: #475569; font-size: .86rem; line-height: 1.5; }
+.markdown-tools { display: grid; gap: 10px; margin-top: 24px; }
+textarea { width: 100%; min-height: 140px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font: .9rem ui-monospace, monospace; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; }
+button { padding: 10px 16px; border: 1px solid #334155; border-radius: 8px; background: #334155; color: white; cursor: pointer; }
+button:hover { background: #1e293b; }
+@media (max-width: 640px) { main { margin: 0; padding: 16px; border: 0; border-radius: 0; } #document-title { font-size: 1.4rem; } }

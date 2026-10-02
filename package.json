@@ -1,0 +1,60 @@
+{
+  "name": "@rinspacehq/milkdown-writing-preset",
+  "version": "0.1.0",
+  "description": "Milkdown writing enhancements for math, tables, cursor flow and headings",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "dist",
+    "bin",
+    "template",
+    "README.md",
+    "README.zh-CN.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./interactions": {
+      "types": "./dist/interactions.d.ts",
+      "import": "./dist/interactions.js"
+    }
+  },
+  "bin": {
+    "milkdown-writing-preset": "./bin/create-demo.mjs"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json && vite build --config vite.config.ts",
+    "test": "vitest run --pool forks --maxWorkers 1",
+    "pack:check": "npm pack --dry-run"
+  },
+  "peerDependencies": {
+    "@milkdown/crepe": "7.21.2",
+    "@milkdown/kit": "7.21.2",
+    "katex": "^0.16.25"
+  },
+  "devDependencies": {
+    "@milkdown/crepe": "7.21.2",
+    "@milkdown/kit": "7.21.2",
+    "katex": "0.16.25",
+    "typescript": "5.9.3",
+    "vite": "6.4.3",
+    "vitest": "3.2.7"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rinspacehq/milkdown-writing-preset"
+  },
+  "homepage": "https://github.com/rinspacehq/milkdown-writing-preset#readme",
+  "bugs": {
+    "url": "https://github.com/rinspacehq/milkdown-writing-preset/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
