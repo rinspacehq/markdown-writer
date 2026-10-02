@@ -6,10 +6,18 @@ main { max-width: 900px; margin: 24px auto; padding: 24px; background: white; bo
 #document-title { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font: 600 1.8rem system-ui, sans-serif; }
 .editor { margin-top: 18px; min-height: 320px; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; }
 .editor .ProseMirror { min-height: 320px; padding: 20px; }
+.editor-actions { display: flex; justify-content: flex-end; margin-top: 16px; }
+.editor-actions button { background: #fff; color: #334155; }
+.math-panel { display: grid; gap: 10px; margin-top: 18px; padding: 16px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; }
+.math-panel label { font-size: .85rem; font-weight: 700; }
+.math-panel textarea { min-height: 90px; }
+.rin-latex-placeholder-preview { padding: 14px; }
 .tip { margin: 10px 0 0; color: #475569; font-size: .86rem; line-height: 1.5; }
 .markdown-tools { display: grid; gap: 10px; margin-top: 24px; }
 textarea { width: 100%; min-height: 140px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font: .9rem ui-monospace, monospace; }
 .actions { display: flex; gap: 10px; flex-wrap: wrap; }
 button { padding: 10px 16px; border: 1px solid #334155; border-radius: 8px; background: #334155; color: white; cursor: pointer; }
 button:hover { background: #1e293b; }
+.secondary { background: white; color: #334155; }
+.secondary:hover { background: #f1f5f9; }
 @media (max-width: 640px) { main { margin: 0; padding: 16px; border: 0; border-radius: 0; } #document-title { font-size: 1.4rem; } }

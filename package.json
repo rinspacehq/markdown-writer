@@ -1,6 +1,6 @@
 {
   "name": "@rinspacehq/milkdown-writing-preset",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Milkdown writing enhancements for math, tables, cursor flow and headings",
   "license": "MIT",
   "type": "module",
@@ -54,5 +54,11 @@
   "bugs": {
     "url": "https://github.com/rinspacehq/milkdown-writing-preset/issues"
   },
-  "keywords": ["milkdown", "markdown", "editor", "math", "table"]
+  "keywords": [
+    "milkdown",
+    "markdown",
+    "editor",
+    "math",
+    "table"
+  ]
 }
