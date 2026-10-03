@@ -3,7 +3,8 @@ import { commandsCtx } from '@milkdown/kit/core';
 import type { Ctx } from '@milkdown/kit/ctx';
 import { codeBlockSchema, setBlockTypeCommand } from '@milkdown/kit/preset/commonmark';
 import { replaceAll } from '@milkdown/kit/utils';
-import { useEffect, useState, type ChangeEvent, type ReactNode, type Ref } from 'react';
+import { useEffect, useState, type ChangeEvent, type ReactNode, type RefObject } from 'react';
+import { createPortal } from 'react-dom';
 
 import { rinTopBarMathIcon } from './mathView';
 import { registerWritingEnhancements } from './preset';
@@ -23,6 +24,34 @@ export type WriterTopBarBuilder = {
   addGroup: (key: string, label: string) => WriterTopBarGroup;
   getGroup: (key: string) => WriterTopBarGroup;
 };
+
+const writerQuiverIcon = `
+  <span class="milkdown-icon">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="6" cy="6" r="1.7"></circle>
+        <circle cx="18" cy="6" r="1.7"></circle>
+        <circle cx="6" cy="18" r="1.7"></circle>
+        <circle cx="18" cy="18" r="1.7"></circle>
+        <path d="M8.2 6h7.1"></path><path d="M15.1 4.4 17 6l-1.9 1.6"></path>
+        <path d="M6 8.2v7.1"></path><path d="M4.4 15.1 6 17l1.6-1.9"></path>
+        <path d="M8.2 18h7.1"></path><path d="M15.1 16.4 17 18l-1.9 1.6"></path>
+      </g>
+    </svg>
+  </span>
+`;
+
+export function appendWriterQuiverTopBar(
+  builder: WriterTopBarBuilder,
+  openQuiver: () => void,
+  label = 'Quiver',
+) {
+  builder.addGroup('rin-quiver', label).addItem('quiver', {
+    icon: writerQuiverIcon,
+    active: () => false,
+    onRun: openQuiver,
+  });
+}
 
 export type WriterHeadingOption = { label: string; level: number | null };
 
@@ -172,18 +201,36 @@ export function WriterTitleField({ title, label, onTitleChange }: WriterTitleFie
 }
 
 export type WriterEditorFrameProps = {
-  hostRef: Ref<HTMLDivElement>;
+  hostRef: RefObject<HTMLDivElement | null>;
   label: string;
   enterFullscreenLabel: string;
   exitFullscreenLabel: string;
+  ready: boolean;
   loading?: ReactNode;
 };
 
 /** Owns the production frame, fullscreen behavior, and Milkdown mount element. */
 export function WriterEditorFrame({
-  hostRef, label, enterFullscreenLabel, exitFullscreenLabel, loading,
+  hostRef, label, enterFullscreenLabel, exitFullscreenLabel, ready, loading,
 }: WriterEditorFrameProps) {
   const [fullscreen, setFullscreen] = useState(false);
+  const [toolbar, setToolbar] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!ready) {
+      setToolbar(null);
+      setFullscreen(false);
+      return undefined;
+    }
+    const host = hostRef.current;
+    if (!host) return undefined;
+    const synchronize = () => {
+      setToolbar(host.querySelector<HTMLElement>('.top-bar-inner'));
+    };
+    synchronize();
+    const observer = new MutationObserver(synchronize);
+    observer.observe(host, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [hostRef, ready]);
   useEffect(() => {
     if (!fullscreen) return;
     const previousOverflow = document.body.style.overflow;
@@ -204,24 +251,28 @@ export function WriterEditorFrame({
       aria-label={label}
       data-editor-fullscreen={fullscreen ? 'true' : 'false'}
     >
-      <button
-        className="rin-animate-icon-button markdown-editor-fullscreen-toggle"
-        type="button"
-        aria-label={controlLabel}
-        title={controlLabel}
-        aria-pressed={fullscreen}
-        onClick={() => setFullscreen((current) => !current)}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-          {fullscreen ? (
-            <><path d="M4 14h6v6" /><path d="M20 10h-6V4" /><path d="m14 10 7-7" /><path d="m3 21 7-7" /></>
-          ) : (
-            <><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></>
-          )}
-        </svg>
-      </button>
       {loading}
       <div ref={hostRef} className="milkdown-editor-host" />
+      {toolbar ? createPortal(
+        <button
+          className="top-bar-item rin-animate-icon-button markdown-editor-fullscreen-toggle"
+          type="button"
+          aria-label={controlLabel}
+          title={controlLabel}
+          data-rin-tooltip={controlLabel}
+          aria-pressed={fullscreen}
+          onClick={() => setFullscreen((current) => !current)}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
+            {fullscreen ? (
+              <><path d="M4 14h6v6" /><path d="M20 10h-6V4" /><path d="m14 10 7-7" /><path d="m3 21 7-7" /></>
+            ) : (
+              <><path d="M8 3H5a2 2 0 0 0-2 2v3" /><path d="M21 8V5a2 2 0 0 0-2-2h-3" /><path d="M3 16v3a2 2 0 0 0 2 2h3" /><path d="M16 21h3a2 2 0 0 0 2-2v-3" /></>
+            )}
+          </svg>
+        </button>,
+        toolbar,
+      ) : null}
     </section>
   );
 }

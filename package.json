@@ -1,6 +1,6 @@
 {
   "name": "@rinspacehq/markdown-writer",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Rinspace's Milkdown Markdown writing page and writing enhancements",
   "license": "MIT",
   "type": "module",
@@ -26,7 +26,7 @@
       "import": "./dist/writer.js"
     },
     "./page": {
-      "types": "./dist/MarkdownWriter.d.ts",
+      "types": "./dist/page.d.ts",
       "import": "./dist/page.js"
     },
     "./writer.css": "./dist/writer.css",
@@ -57,7 +57,8 @@
     "@codemirror/view": "6.43.1",
     "@lezer/highlight": "1.2.3",
     "katex": "^0.16.25",
-    "react": "^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@milkdown/crepe": "7.21.2",
@@ -70,7 +71,9 @@
     "@lezer/highlight": "1.2.3",
     "katex": "0.16.25",
     "react": "19.2.8",
+    "react-dom": "19.2.8",
     "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
     "typescript": "5.9.3",
     "vite": "6.4.3",
     "vitest": "3.2.7"
