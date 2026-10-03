@@ -261,42 +261,85 @@ export const MarkdownWriter = forwardRef<MarkdownWriterHandle, MarkdownWriterPro
           });
         }, 0);
       };
+      let compositionActive = false;
+      let compositionSyncPending = false;
+      let compositionSyncTimer: number | null = null;
+      const clearCompositionSyncTimer = () => {
+        if (compositionSyncTimer !== null) {
+          window.clearTimeout(compositionSyncTimer);
+          compositionSyncTimer = null;
+        }
+      };
+      const applyMarkdownUpdate = (
+        markdown: string,
+        composing: boolean,
+        notifyMarkdownChange = true,
+      ) => {
+        const cleanMarkdown = normalizeMarkdown(markdown);
+        refs.markdown.current = cleanMarkdown;
+        if (refs.syncing.current) return;
+        if (notifyMarkdownChange) {
+          propsRef.current.onMarkdownChange?.(cleanMarkdown);
+        }
+        if (composing) {
+          compositionSyncPending = true;
+          return;
+        }
+        compositionSyncPending = false;
+        clearCompositionSyncTimer();
+        const synchronized = synchronizeMarkdownTitle(cleanMarkdown, refs.title.current);
+        if (synchronized.title !== refs.title.current) {
+          refs.title.current = synchronized.title;
+          propsRef.current.onTitleChange(synchronized.title);
+          restoreEditorSelectionAfterTitleSync();
+        }
+        const normalizedMarkdown = synchronized.markdown;
+        if (normalizedMarkdown !== cleanMarkdown) {
+          if (differsOnlyByTrailingBlankLines(cleanMarkdown, normalizedMarkdown)) {
+            refs.markdown.current = normalizedMarkdown;
+            return;
+          }
+          refs.syncing.current = true;
+          refs.markdown.current = normalizedMarkdown;
+          editor.editor.action(replaceAll(hydrate(normalizedMarkdown), true));
+          window.setTimeout(() => { refs.syncing.current = false; }, 0);
+          return;
+        }
+        if (refs.skipNextMathReparse.current) {
+          refs.skipNextMathReparse.current = false;
+          markMathReparseHandled(cleanMarkdown);
+          return;
+        }
+        if (cleanMarkdown !== markdown) {
+          if (editorHasActiveSelection()) return;
+          refs.syncing.current = true;
+          replaceAllWhenEditorInactive(hydrate(cleanMarkdown));
+          window.setTimeout(() => { refs.syncing.current = false; }, 0);
+        }
+      };
+      const finishCompositionSync = () => {
+        clearCompositionSyncTimer();
+        compositionSyncTimer = window.setTimeout(() => {
+          compositionSyncTimer = null;
+          compositionActive = false;
+          if (disposed || !compositionSyncPending) return;
+          applyMarkdownUpdate(editor.getMarkdown(), false, false);
+        }, 0);
+      };
+      const beginCompositionSync = () => {
+        compositionActive = true;
+        clearCompositionSyncTimer();
+      };
+      host.addEventListener('compositionstart', beginCompositionSync, true);
+      host.addEventListener('compositionend', finishCompositionSync, true);
+      host.addEventListener('compositioncancel', finishCompositionSync, true);
       refs.editor.current = editor;
       editor.on((listener) => {
-        listener.markdownUpdated((_ctx, markdown) => {
-          const cleanMarkdown = normalizeMarkdown(markdown);
-          refs.markdown.current = cleanMarkdown;
-          if (refs.syncing.current) return;
-          propsRef.current.onMarkdownChange?.(cleanMarkdown);
-          const synchronized = synchronizeMarkdownTitle(cleanMarkdown, refs.title.current);
-          if (synchronized.title !== refs.title.current) {
-            refs.title.current = synchronized.title;
-            propsRef.current.onTitleChange(synchronized.title);
-            restoreEditorSelectionAfterTitleSync();
-          }
-          const normalizedMarkdown = synchronized.markdown;
-          if (normalizedMarkdown !== cleanMarkdown) {
-            if (differsOnlyByTrailingBlankLines(cleanMarkdown, normalizedMarkdown)) {
-              refs.markdown.current = normalizedMarkdown;
-              return;
-            }
-            refs.syncing.current = true;
-            refs.markdown.current = normalizedMarkdown;
-            editor.editor.action(replaceAll(hydrate(normalizedMarkdown), true));
-            window.setTimeout(() => { refs.syncing.current = false; }, 0);
-            return;
-          }
-          if (refs.skipNextMathReparse.current) {
-            refs.skipNextMathReparse.current = false;
-            markMathReparseHandled(cleanMarkdown);
-            return;
-          }
-          if (cleanMarkdown !== markdown) {
-            if (editorHasActiveSelection()) return;
-            refs.syncing.current = true;
-            replaceAllWhenEditorInactive(hydrate(cleanMarkdown));
-            window.setTimeout(() => { refs.syncing.current = false; }, 0);
-          }
+        listener.markdownUpdated((ctx, markdown) => {
+          applyMarkdownUpdate(
+            markdown,
+            compositionActive || ctx.get(editorViewCtx).composing,
+          );
         });
       });
       void editor.create().then(() => {
@@ -317,6 +360,10 @@ export const MarkdownWriter = forwardRef<MarkdownWriterHandle, MarkdownWriterPro
       });
       return () => {
         disposed = true;
+        clearCompositionSyncTimer();
+        host.removeEventListener('compositionstart', beginCompositionSync, true);
+        host.removeEventListener('compositionend', finishCompositionSync, true);
+        host.removeEventListener('compositioncancel', finishCompositionSync, true);
         clearMathReparseTimer();
         interactions.destroy();
         latex.closeEditor(false);

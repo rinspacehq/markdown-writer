@@ -1,5 +1,4 @@
 import type { Crepe } from '@milkdown/crepe';
-import { editorViewCtx } from '@milkdown/kit/core';
 import type { RefCell } from './ref';
 
 import {
@@ -61,44 +60,6 @@ export function createWritingInteractions({
   let destroyed = false;
   let closeInlineMathEditor: (() => void) | null = null;
   let pendingCodeBlockFocus: PendingCodeBlockFocus | null = null;
-  let composingInFirstBlock = false;
-  let suppressHeadingSelectorUntil = 0;
-
-  const selectionIsInFirstBlock = () => {
-    const inFirstDocumentBlock = editorRef.current?.editor.action((ctx) => {
-      const { $from } = ctx.get(editorViewCtx).state.selection;
-      return $from.depth > 0 && $from.before($from.depth) === 0;
-    });
-    if (typeof inFirstDocumentBlock === 'boolean') return inFirstDocumentBlock;
-    const editor = host.querySelector('.ProseMirror');
-    const anchor = window.getSelection()?.anchorNode;
-    if (!(editor instanceof HTMLElement) || !anchor) return false;
-    const firstBlock = Array.from(editor.children).find(
-      (child) => !child.classList.contains('prosemirror-virtual-cursor'),
-    );
-    return Boolean(firstBlock?.contains(anchor));
-  };
-
-  const beginComposition = () => {
-    composingInFirstBlock = selectionIsInFirstBlock();
-    if (composingInFirstBlock) suppressHeadingSelectorUntil = Number.POSITIVE_INFINITY;
-  };
-
-  const finishComposition = () => {
-    if (composingInFirstBlock) {
-      suppressHeadingSelectorUntil = performance.now() + 400;
-    }
-    composingInFirstBlock = false;
-  };
-
-  const preventHeadingSelectorFromImePointer = (event: PointerEvent) => {
-    const target = event.target;
-    if (!(target instanceof Element) || !target.closest('.top-bar-heading-button')) return;
-    if (performance.now() > suppressHeadingSelectorUntil) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    if (!composingInFirstBlock) suppressHeadingSelectorUntil = 0;
-  };
 
   const clearPendingCodeBlockFocus = () => {
     if (pendingCodeBlockFocus) {
@@ -361,10 +322,6 @@ export function createWritingInteractions({
     if (attached || destroyed) return;
     attached = true;
     host.addEventListener('paste', parsePastedMathMarkdown, true);
-    host.addEventListener('compositionstart', beginComposition, true);
-    host.addEventListener('compositionend', finishComposition, true);
-    host.addEventListener('compositioncancel', finishComposition, true);
-    host.addEventListener('pointerdown', preventHeadingSelectorFromImePointer, true);
     host.addEventListener('keydown', keepFocusOnBlankParagraphAfterCodeBlock, true);
     host.addEventListener('keydown', keepFocusOnBlankParagraphAfterLatexBlock, true);
     document.addEventListener('keydown', requestCodeBlockFocusAfterEnter, true);
@@ -390,10 +347,6 @@ export function createWritingInteractions({
     clearPendingCodeBlockFocus();
     if (attached) {
       host.removeEventListener('paste', parsePastedMathMarkdown, true);
-      host.removeEventListener('compositionstart', beginComposition, true);
-      host.removeEventListener('compositionend', finishComposition, true);
-      host.removeEventListener('compositioncancel', finishComposition, true);
-      host.removeEventListener('pointerdown', preventHeadingSelectorFromImePointer, true);
       host.removeEventListener('keydown', keepFocusOnBlankParagraphAfterCodeBlock, true);
       host.removeEventListener('keydown', keepFocusOnBlankParagraphAfterLatexBlock, true);
       document.removeEventListener('keydown', requestCodeBlockFocusAfterEnter, true);
