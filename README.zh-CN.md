@@ -4,14 +4,14 @@
 
 这个写作页面基于 [Milkdown](https://github.com/Milkdown/milkdown) 及其 Crepe 编辑器。编辑器框架和内建编辑功能来自 Milkdown；Rinspace 维护页面外壳、接入代码，以及针对标题、数学、表格和光标行为的八项写作增强。上游项目与许可证见[协议与致谢](#协议与致谢)。
 
-公开的标题字段和 Milkdown 编辑器是 Rinspace `/write/markdown` 实际消费的源码。网站通过私有适配器接入账号相关控件：标签、封面上传、图片存储、Quiver、草稿、保存和发布。一键生成的页面直接运行公开源码，贡献者因此可以在与 Rinspace 共用的写作区域验证改动。
+完整写作界面就是 Rinspace `/write/markdown` 实际消费的源码，包括标题、标签、摘要、封面、源码可见性、保存与发布控件，以及 Milkdown 工具栏和编辑区域。Rinspace 仅通过有类型的回调接入账号数据和站内服务。一键生成的页面使用本地或空操作适配器渲染同一个组件，因此贡献者看到的就是 Rinspace 会消费的页面。
 
 ## 运行页面
 
-`v0.2.1` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
+`v0.3.0` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.2.1/rinspacehq-markdown-writer-0.2.1.tgz -- markdown-writer create my-markdown-writer
+npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.3.0/rinspacehq-markdown-writer-0.3.0.tgz -- markdown-writer create my-markdown-writer
 ```
 
 需要 Node.js 20 或更新版本。命令不会覆盖已有目录，会打印本地地址；按 Ctrl+C 停止。在生成目录运行 `npm run build` 可得到 `dist/` 静态文件，再由你自行托管。上述命令不会把页面发布到公网。
@@ -22,19 +22,20 @@ npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/
 npm ci
 npm run build
 npm pack
-node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.2.1.tgz
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.3.0.tgz
 ```
 
-页面保留文章标题、Milkdown 写作区域、工具栏、全屏控件和同源的 LaTeX 编辑面板，默认打开空白文档。它不要求 Rinspace 账号，也不访问 Rinspace 服务。页面没有标签选择、封面上传、图片上传、Quiver、保存、发布、本地文件导入或 Markdown 源码框。
+页面保留与 Rinspace 相同的写作控件和 Milkdown 编辑区域，默认打开空白文档；它不要求 Rinspace 账号，也不访问 Rinspace 服务。标签和封面预览只留在本地，图片插入在当前会话使用浏览器对象 URL，摘要、Quiver、保存和发布使用空操作适配器。页面不增加测试专用的 Markdown 源码框或导入导出界面。
 
 ## 同源代码与公开接口
 
 `@rinspacehq/markdown-writer/writer` 导出产品写作区域的共同代码：
 
-- `@rinspacehq/markdown-writer/page` 导出完整的 `MarkdownWriter` 页面组件。Rinspace 和一键生成页面都直接渲染这个组件；生成页面不再维护另一套编辑器生命周期或标题联动实现。私有控件仅通过适配器和插槽接入。
+- `@rinspacehq/markdown-writer/page` 导出完整页面组件 `MarkdownWriterPage`。Rinspace 和一键生成项目都直接渲染它；标题栏、页面控件、编辑器生命周期、标题联动、全屏位置和 Milkdown 边框都由它维护。宿主只提供数据和服务回调，不再重建页面工具栏。
+- 同一入口也导出较底层的 `MarkdownWriter`，供明确只需要标题与编辑区域的集成使用；完整页面内部同样使用它。
 
 - `WriterTitleField` 和 `WriterEditorFrame` 渲染标题与编辑器边框。
-- `createWriterEditor` 以同一份配置构造 Crepe 和写作插件。站内宿主可通过 `extendTopBar` 添加私有控件，并注入图片上传适配器；公开页面不传入这两项。
+- `createWriterEditor` 以同一份配置构造 Crepe 和写作插件。图片存储和 Quiver 行为通过适配器注入，但对应工具栏控件仍由共享页面配置维护。
 - `syncWriterTitle` 和 Markdown 标题工具双向维护标题字段、编辑器第一行与文首 H1 的关系。
 - `applyWriterTopBarLabels` 为工具栏提供可访问名称。
 - `@rinspacehq/markdown-writer/writer.css` 包含从 Rinspace 写作页迁出的编辑区域样式。

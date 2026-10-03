@@ -362,6 +362,7 @@ export const MarkdownWriter = forwardRef<MarkdownWriterHandle, MarkdownWriterPro
           label={props.labels.editor}
           enterFullscreenLabel={props.labels.enterFullscreen}
           exitFullscreenLabel={props.labels.exitFullscreen}
+          ready={editorReady}
           loading={editorReady ? null : props.loading}
         />
         {latex.editor ? (
