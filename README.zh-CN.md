@@ -8,10 +8,10 @@
 
 ## 运行页面
 
-`v0.2.0` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
+`v0.2.1` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.2.0/rinspacehq-markdown-writer-0.2.0.tgz -- markdown-writer create my-markdown-writer
+npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.2.1/rinspacehq-markdown-writer-0.2.1.tgz -- markdown-writer create my-markdown-writer
 ```
 
 需要 Node.js 20 或更新版本。命令不会覆盖已有目录，会打印本地地址；按 Ctrl+C 停止。在生成目录运行 `npm run build` 可得到 `dist/` 静态文件，再由你自行托管。上述命令不会把页面发布到公网。
@@ -22,7 +22,7 @@ npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/
 npm ci
 npm run build
 npm pack
-node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.2.0.tgz
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.2.1.tgz
 ```
 
 页面保留文章标题、Milkdown 写作区域、工具栏、全屏控件和同源的 LaTeX 编辑面板，默认打开空白文档。它不要求 Rinspace 账号，也不访问 Rinspace 服务。页面没有标签选择、封面上传、图片上传、Quiver、保存、发布、本地文件导入或 Markdown 源码框。
@@ -31,9 +31,11 @@ node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对�
 
 `@rinspacehq/markdown-writer/writer` 导出产品写作区域的共同代码：
 
+- `@rinspacehq/markdown-writer/page` 导出完整的 `MarkdownWriter` 页面组件。Rinspace 和一键生成页面都直接渲染这个组件；生成页面不再维护另一套编辑器生命周期或标题联动实现。私有控件仅通过适配器和插槽接入。
+
 - `WriterTitleField` 和 `WriterEditorFrame` 渲染标题与编辑器边框。
 - `createWriterEditor` 以同一份配置构造 Crepe 和写作插件。站内宿主可通过 `extendTopBar` 添加私有控件，并注入图片上传适配器；公开页面不传入这两项。
-- `syncWriterTitle` 和 Markdown 标题工具维护标题与文首 H1 的关系。
+- `syncWriterTitle` 和 Markdown 标题工具双向维护标题字段、编辑器第一行与文首 H1 的关系。
 - `applyWriterTopBarLabels` 为工具栏提供可访问名称。
 - `@rinspacehq/markdown-writer/writer.css` 包含从 Rinspace 写作页迁出的编辑区域样式。
 

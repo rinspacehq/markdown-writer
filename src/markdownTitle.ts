@@ -111,3 +111,38 @@ export function markdownWithTitle(markdown: string, title: string) {
   const escapedTitle = escapeMarkdownHeadingText(unescapeMarkdownText(nextTitle));
   return body.trim() ? `# ${escapedTitle}\n\n${body}` : `# ${escapedTitle}`;
 }
+
+export type SynchronizedMarkdownTitle = {
+  title: string;
+  markdown: string;
+};
+
+/** Keep the external title and the editor's first visible line as one value. */
+export function synchronizeMarkdownTitle(markdown: string, currentTitle: string) {
+  const source = markdownWithoutDefaultTemplate(markdown).replace(/\r\n?/g, '\n');
+  const headingTitle = firstMarkdownHeading(source);
+  if (headingTitle) {
+    return {
+      title: headingTitle,
+      markdown: markdownWithTitle(source, headingTitle),
+    } satisfies SynchronizedMarkdownTitle;
+  }
+
+  const lines = source.split('\n');
+  const firstLine = lines[0]?.trim() || '';
+  if (firstLine) {
+    const firstLineTitle = normalizedMarkdownTitleText(
+      firstLine.replace(/^\s{0,3}#{1,6}(?:\s+|$)/, ''),
+    );
+    const body = lines.slice(1).join('\n').replace(/^\n+/, '');
+    return {
+      title: firstLineTitle,
+      markdown: markdownWithTitle(body, firstLineTitle),
+    } satisfies SynchronizedMarkdownTitle;
+  }
+
+  return {
+    title: currentTitle,
+    markdown: markdownWithTitle(source, currentTitle),
+  } satisfies SynchronizedMarkdownTitle;
+}
