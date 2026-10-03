@@ -335,11 +335,8 @@ export const MarkdownWriter = forwardRef<MarkdownWriterHandle, MarkdownWriterPro
       host.addEventListener('compositioncancel', finishCompositionSync, true);
       refs.editor.current = editor;
       editor.on((listener) => {
-        listener.markdownUpdated((ctx, markdown) => {
-          applyMarkdownUpdate(
-            markdown,
-            compositionActive || ctx.get(editorViewCtx).composing,
-          );
+        listener.markdownUpdated((_ctx, markdown) => {
+          applyMarkdownUpdate(markdown, compositionActive);
         });
       });
       void editor.create().then(() => {

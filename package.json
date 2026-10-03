@@ -1,6 +1,6 @@
 {
   "name": "@rinspacehq/markdown-writer",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Rinspace's Milkdown Markdown writing page and writing enhancements",
   "license": "MIT",
   "type": "module",
