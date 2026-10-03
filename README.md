@@ -8,10 +8,10 @@ The complete writing surface is the source used by Rinspace's `/write/markdown` 
 
 ## Run the page
 
-The `v0.3.2` GitHub Release provides one command to create a local React project, install its exact package version, and start Vite:
+The `v0.3.3` GitHub Release provides one command to create a local React project, install its exact package version, and start Vite:
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.3.2/rinspacehq-markdown-writer-0.3.2.tgz -- markdown-writer create my-markdown-writer
+npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.3.3/rinspacehq-markdown-writer-0.3.3.tgz -- markdown-writer create my-markdown-writer
 ```
 
 Node.js 20 or newer is required. The command refuses to overwrite an existing directory and prints the local URL. Stop it with Ctrl+C. To make static files, run `npm run build` in the generated directory and host `dist/` yourself. This command does not deploy a website.
@@ -22,12 +22,12 @@ To try a reviewed candidate before release:
 npm ci
 npm run build
 npm pack
-node bin/create-demo.mjs create my-markdown-writer --package-spec file:/absolute/path/to/rinspacehq-markdown-writer-0.3.2.tgz
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/absolute/path/to/rinspacehq-markdown-writer-0.3.3.tgz
 ```
 
 The page contains the same writing controls and Milkdown surface as Rinspace. It opens with an empty document and does not ask for a Rinspace account or contact Rinspace services. Tags and cover preview stay local, image insertion uses browser object URLs for the current session, and summary, Quiver, save, and publish use no-op adapters. There is no test-only Markdown source panel or import/export UI.
 
-`v0.3.2` keeps title synchronization from rewriting Milkdown while a Chinese IME composition is active. Typing, deleting within the composition, committing a candidate, and deleting the committed title no longer make Milkdown's block menu jump open. The title field, first visible line, and leading H1 use the same synchronization code as Rinspace. The fullscreen control sits at the far right of the first toolbar row at desktop, tablet, and mobile widths.
+`v0.3.3` keeps title synchronization from rewriting Milkdown while a Chinese IME composition is active. Typing, deleting within the composition, committing a candidate, and deleting the committed title no longer make Milkdown's block menu jump open. The composition lifecycle remains compatible with hosts that provide a lightweight Milkdown listener context. The title field, first visible line, and leading H1 use the same synchronization code as Rinspace. The fullscreen control sits at the far right of the first toolbar row at desktop, tablet, and mobile widths.
 
 ## Shared source and public API
 
