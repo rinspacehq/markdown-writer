@@ -1,6 +1,6 @@
 {
   "name": "@rinspacehq/markdown-writer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Rinspace's Milkdown Markdown writing page and writing enhancements",
   "license": "MIT",
   "type": "module",
@@ -24,6 +24,10 @@
     "./writer": {
       "types": "./dist/writer.d.ts",
       "import": "./dist/writer.js"
+    },
+    "./page": {
+      "types": "./dist/MarkdownWriter.d.ts",
+      "import": "./dist/page.js"
     },
     "./writer.css": "./dist/writer.css",
     "./latex-editor": {

@@ -5,6 +5,7 @@ import {
   markdownWithTitle,
   markdownWithoutDefaultTemplate,
   sanitizeMarkdownSource,
+  synchronizeMarkdownTitle,
 } from '../src/markdownTitle';
 
 test('keeps the article title as the first markdown h1', () => {
@@ -102,4 +103,20 @@ test('keeps html break tags out when composing titled markdown', () => {
   expect(markdownWithTitle(['Intro', '<br />', 'Body'].join('\n'), 'Title')).toBe(
     ['# Title', '', 'Intro', '', 'Body'].join('\n'),
   );
+});
+
+test('keeps an edited plain first line and the external title synchronized', () => {
+  expect(synchronizeMarkdownTitle('Editor title', 'Field title')).toEqual({
+    title: 'Editor title',
+    markdown: '# Editor title',
+  });
+});
+
+test('keeps the leading h1 authoritative and demotes later h1 headings', () => {
+  expect(
+    synchronizeMarkdownTitle('# Editor title\n\nBody\n\n# Section', 'Field title'),
+  ).toEqual({
+    title: 'Editor title',
+    markdown: '# Editor title\n\nBody\n\n## Section',
+  });
 });

@@ -24,6 +24,8 @@ export {
   markdownWithoutDefaultTemplate,
   markdownWithoutMatchingTitle,
   sanitizeMarkdownSource,
+  synchronizeMarkdownTitle,
+  type SynchronizedMarkdownTitle,
 } from './markdownTitle';
 export {
   insertLatexPlaceholderParagraph,
