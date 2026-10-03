@@ -8,10 +8,10 @@
 
 ## 运行页面
 
-`v0.3.0` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
+`v0.3.1` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.3.0/rinspacehq-markdown-writer-0.3.0.tgz -- markdown-writer create my-markdown-writer
+npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.3.1/rinspacehq-markdown-writer-0.3.1.tgz -- markdown-writer create my-markdown-writer
 ```
 
 需要 Node.js 20 或更新版本。命令不会覆盖已有目录，会打印本地地址；按 Ctrl+C 停止。在生成目录运行 `npm run build` 可得到 `dist/` 静态文件，再由你自行托管。上述命令不会把页面发布到公网。
@@ -22,10 +22,12 @@ npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/
 npm ci
 npm run build
 npm pack
-node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.3.0.tgz
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.3.1.tgz
 ```
 
 页面保留与 Rinspace 相同的写作控件和 Milkdown 编辑区域，默认打开空白文档；它不要求 Rinspace 账号，也不访问 Rinspace 服务。标签和封面预览只留在本地，图片插入在当前会话使用浏览器对象 URL，摘要、Quiver、保存和发布使用空操作适配器。页面不增加测试专用的 Markdown 源码框或导入导出界面。
+
+`v0.3.1` 同时包含线上首行交互修复：使用中文输入法组合输入时不会误打开标题级别菜单，用户主动点击仍可正常打开。标题输入框、正文第一行与文首 H1 使用 Rinspace 线上相同的同步代码。全屏按钮在桌面、平板和手机宽度下都位于工具栏第一行最右侧。
 
 ## 同源代码与公开接口
 
