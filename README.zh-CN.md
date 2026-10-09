@@ -1,17 +1,17 @@
-# Rinspace Markdown Writer
+# Rinspace Markdown Editor
 
 [English](README.md)
 
-这个写作页面基于 [Milkdown](https://github.com/Milkdown/milkdown) 及其 Crepe 编辑器。编辑器框架和内建编辑功能来自 Milkdown；Rinspace 维护页面外壳、接入代码，以及针对标题、数学、表格和光标行为的八项写作增强。上游项目与许可证见[协议与致谢](#协议与致谢)。
+Rinspace Markdown Editor 基于 [Milkdown](https://github.com/Milkdown/milkdown) 及其 Crepe 编辑器。编辑器框架和内建编辑功能来自 Milkdown；Rinspace 维护页面外壳、接入代码，以及针对标题、数学、表格和光标行为的八项写作增强。上游项目与许可证见[协议与致谢](#协议与致谢)。
 
 完整写作界面就是 Rinspace `/write/markdown` 实际消费的源码，包括标题、标签、摘要、封面、源码可见性、保存与发布控件，以及 Milkdown 工具栏和编辑区域。Rinspace 仅通过有类型的回调接入账号数据和站内服务。一键生成的页面使用本地或空操作适配器渲染同一个组件，因此贡献者看到的就是 Rinspace 会消费的页面。
 
 ## 运行页面
 
-`v0.3.3` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
+`v0.3.4` GitHub Release 提供一条命令创建本地 React 项目、安装精确版本的包并启动 Vite：
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.3.3/rinspacehq-markdown-writer-0.3.3.tgz -- markdown-writer create my-markdown-writer
+npm exec --yes --package=https://github.com/rinspacehq/rinspace-editor-markdown/releases/download/v0.3.4/rinspacehq-markdown-writer-0.3.4.tgz -- markdown-writer create my-markdown-writer
 ```
 
 需要 Node.js 20 或更新版本。命令不会覆盖已有目录，会打印本地地址；按 Ctrl+C 停止。在生成目录运行 `npm run build` 可得到 `dist/` 静态文件，再由你自行托管。上述命令不会把页面发布到公网。
@@ -22,12 +22,12 @@ npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/
 npm ci
 npm run build
 npm pack
-node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.3.3.tgz
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/绝对路径/rinspacehq-markdown-writer-0.3.4.tgz
 ```
 
 页面保留与 Rinspace 相同的写作控件和 Milkdown 编辑区域，默认打开空白文档；它不要求 Rinspace 账号，也不访问 Rinspace 服务。标签和封面预览只留在本地，图片插入在当前会话使用浏览器对象 URL，摘要、Quiver、保存和发布使用空操作适配器。页面不增加测试专用的 Markdown 源码框或导入导出界面。
 
-`v0.3.3` 会在中文输入法组合期间暂停改写 Milkdown 文档。组合输入、组合中删除、候选词上屏以及删除已上屏标题时，Milkdown 的块菜单都不会再跳出；组合生命周期同时兼容只提供轻量 Milkdown 监听上下文的宿主。标题输入框、正文第一行与文首 H1 使用 Rinspace 线上相同的同步代码。全屏按钮在桌面、平板和手机宽度下都位于工具栏第一行最右侧。
+`v0.3.4` 会保留从代码编辑器复制的源码；粘贴到写作区域时生成安全的 Markdown 围栏；及时释放本地图片对象 URL；并更新 Milkdown、KaTeX 和测试工具链。Rinspace 既有的可信 KaTeX 创作能力保持启用。仓库改名后，包名和 `markdown-writer` 命令继续兼容。
 
 ## 同源代码与公开接口
 
@@ -51,6 +51,8 @@ Milkdown Crepe 的 LaTeX、CodeMirror、Table、Toolbar、BlockEdit、TopBar 和
 运行 `npm ci`、`npm run build`、`npm test`、`npm pack --dry-run`，再用打包后的 tarball 在干净目录验证一键页面。页面改动还须让 Rinspace 的 Markdown 文章和书籍编辑器对同一个 tarball 完成集成检查。公开改动只有经过维护者审查、不可变 GitHub Release 和私仓精确依赖及锁文件完整性更新后，才会进入产品。生产不消费 `main` 或 `latest`。
 
 原 `@rinspacehq/milkdown-writing-preset` 的 `v0.1.x` 发行版保留为历史插件包。`@rinspacehq/markdown-writer` 从 `v0.2.0` 开始维护页面；旧包使用者需要主动更新导入路径。
+
+仓库使用 `rinspace-editor-markdown` 名称，以便与今后的 Rinspace 自研编辑器组成统一项目族。`v0.3.x` 继续使用包名 `@rinspacehq/markdown-writer`，现有导入和集成无需改动。
 
 ## 协议与致谢
 

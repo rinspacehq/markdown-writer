@@ -1,17 +1,17 @@
-# Rinspace Markdown Writer
+# Rinspace Markdown Editor
 
 [简体中文](README.zh-CN.md)
 
-This writing page is built with [Milkdown](https://github.com/Milkdown/milkdown) and its Crepe editor. Milkdown supplies the editor framework and built-in editing features. Rinspace maintains the page shell, the integration code, and eight writing enhancements for headings, math, tables, and cursor behavior. We credit Milkdown and the other upstream projects in [License and attribution](#license-and-attribution).
+Rinspace Markdown Editor is built with [Milkdown](https://github.com/Milkdown/milkdown) and its Crepe editor. Milkdown supplies the editor framework and built-in editing features. Rinspace maintains the page shell, the integration code, and eight writing enhancements for headings, math, tables, and cursor behavior. We credit Milkdown and the other upstream projects in [License and attribution](#license-and-attribution).
 
 The complete writing surface is the source used by Rinspace's `/write/markdown` page: title, tags, summary, cover, source visibility, save and publish controls, and the Milkdown editor toolbar and frame. Rinspace supplies account-bound data and services through typed callbacks. The generated page renders the same component with local or no-op adapters, so a contributor sees changes in the page that Rinspace actually consumes.
 
 ## Run the page
 
-The `v0.3.3` GitHub Release provides one command to create a local React project, install its exact package version, and start Vite:
+The `v0.3.4` GitHub Release provides one command to create a local React project, install its exact package version, and start Vite:
 
 ```sh
-npm exec --yes --package=https://github.com/rinspacehq/markdown-writer/releases/download/v0.3.3/rinspacehq-markdown-writer-0.3.3.tgz -- markdown-writer create my-markdown-writer
+npm exec --yes --package=https://github.com/rinspacehq/rinspace-editor-markdown/releases/download/v0.3.4/rinspacehq-markdown-writer-0.3.4.tgz -- markdown-writer create my-markdown-writer
 ```
 
 Node.js 20 or newer is required. The command refuses to overwrite an existing directory and prints the local URL. Stop it with Ctrl+C. To make static files, run `npm run build` in the generated directory and host `dist/` yourself. This command does not deploy a website.
@@ -22,12 +22,12 @@ To try a reviewed candidate before release:
 npm ci
 npm run build
 npm pack
-node bin/create-demo.mjs create my-markdown-writer --package-spec file:/absolute/path/to/rinspacehq-markdown-writer-0.3.3.tgz
+node bin/create-demo.mjs create my-markdown-writer --package-spec file:/absolute/path/to/rinspacehq-markdown-writer-0.3.4.tgz
 ```
 
 The page contains the same writing controls and Milkdown surface as Rinspace. It opens with an empty document and does not ask for a Rinspace account or contact Rinspace services. Tags and cover preview stay local, image insertion uses browser object URLs for the current session, and summary, Quiver, save, and publish use no-op adapters. There is no test-only Markdown source panel or import/export UI.
 
-`v0.3.3` keeps title synchronization from rewriting Milkdown while a Chinese IME composition is active. Typing, deleting within the composition, committing a candidate, and deleting the committed title no longer make Milkdown's block menu jump open. The composition lifecycle remains compatible with hosts that provide a lightweight Milkdown listener context. The title field, first visible line, and leading H1 use the same synchronization code as Rinspace. The fullscreen control sits at the far right of the first toolbar row at desktop, tablet, and mobile widths.
+`v0.3.4` preserves source code copied from code editors, creates safe Markdown fences when code is pasted into the writing surface, releases local image object URLs, and updates Milkdown, KaTeX, and the test toolchain. Rinspace's trusted KaTeX authoring behavior remains enabled. The package name and `markdown-writer` command remain compatible after the repository rename.
 
 ## Shared source and public API
 
@@ -51,6 +51,8 @@ Milkdown Crepe's LaTeX, CodeMirror, Table, Toolbar, BlockEdit, TopBar, and LinkT
 Run `npm ci`, `npm run build`, `npm test`, and `npm pack --dry-run`. Test the packed tarball in a clean generated page. Changes to the page must also pass Rinspace's Markdown article and book editor integration checks against that exact tarball. A public change enters the product only after maintainer review, an immutable GitHub Release, and a private dependency update pinned to the release asset and lockfile integrity. Rinspace does not consume `main` or `latest` in production.
 
 The former `@rinspacehq/milkdown-writing-preset` `v0.1.x` releases remain historical plugin-only packages. `@rinspacehq/markdown-writer` starts the page-owning package line at `v0.2.0`; consumers of the earlier package must update their import paths deliberately.
+
+The repository is named `rinspace-editor-markdown` to group Rinspace's first-party editor projects. The package remains `@rinspacehq/markdown-writer` in the `v0.3.x` line so existing imports and integrations continue to work.
 
 ## License and attribution
 
