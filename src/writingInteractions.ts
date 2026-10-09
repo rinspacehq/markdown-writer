@@ -11,7 +11,9 @@ import {
   promoteActiveCodeBlockInfoString,
 } from './mathCommands';
 import {
+  pasteCodeBlockInCtx,
   pasteMarkdownMathInCtx,
+  shouldPasteClipboardAsCodeBlock,
   shouldPasteClipboardAsMarkdown,
 } from './mathMarkdown';
 import { rinLatexBlockOpenEvent } from './mathEvents';
@@ -35,7 +37,16 @@ export type CreateWritingInteractionsOptions = {
   onPasteMarkdown?: (markdown: string) => void;
   onSynchronized?: () => void;
   inlineMathLabels?: InlineMathLabels;
+  mathTrust?: boolean;
 };
+
+export function latexPreviewOptions(mathTrust = false) {
+  return {
+    throwOnError: false,
+    strict: false,
+    trust: mathTrust,
+  } as const;
+}
 
 type PendingCodeBlockFocus = {
   beforeCount: number;
@@ -55,6 +66,7 @@ export function createWritingInteractions({
   onPasteMarkdown,
   onSynchronized,
   inlineMathLabels,
+  mathTrust = false,
 }: CreateWritingInteractionsOptions) {
   let attached = false;
   let destroyed = false;
@@ -120,11 +132,7 @@ export function createWritingInteractions({
   const syncLatexBlockViews = () => {
     host.querySelectorAll('.milkdown-code-block').forEach((block) => {
       if (!(block instanceof HTMLElement)) return;
-      syncLatexCodeBlockElement(block, {
-        throwOnError: false,
-        strict: false,
-        trust: true,
-      });
+      syncLatexCodeBlockElement(block, latexPreviewOptions(mathTrust));
     });
   };
 
@@ -139,7 +147,16 @@ export function createWritingInteractions({
     if (readOnlyRef.current) return;
     const text = event.clipboardData?.getData('text/plain') || '';
     const html = event.clipboardData?.getData('text/html') || '';
-    if (!shouldPasteClipboardAsMarkdown(text, html) || !editorRef.current) return;
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (target instanceof Element && target.closest('.cm-content')) return;
+    if (shouldPasteClipboardAsCodeBlock(text, html)) {
+      event.preventDefault();
+      event.stopPropagation();
+      editorRef.current.editor.action((ctx) => pasteCodeBlockInCtx(ctx, text));
+      return;
+    }
+    if (!shouldPasteClipboardAsMarkdown(text, html)) return;
     event.preventDefault();
     event.stopPropagation();
     editorRef.current.editor.action((ctx) => pasteMarkdownMathInCtx(ctx, text));
