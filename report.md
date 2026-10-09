@@ -10,21 +10,13 @@
 
 **回归保护：** `tests/mathMarkdown.test.ts` 覆盖了带 CodeMirror 风格 HTML 的 `const x = 1;`，断言其不会进入数学 Markdown 路径、会被识别为代码块粘贴，并验证嵌套反引号的围栏安全性。真实浏览器回归也验证了 `# code comment` 与下一行代码会完整保留在 Milkdown 代码块中。
 
-## 2. 自定义 LaTeX 预览错误信任用户内容
-
-**问题：** 自定义公式预览硬编码 `trust: true`，使 KaTeX 可以渲染危险 URL 等受信任扩展。
-
-**修复：** `src/writingInteractions.ts` 现在通过 `latexPreviewOptions` 默认使用 `trust: false`，并从 `MarkdownWriter` 显式传递宿主的 `mathTrust` 选项。演示项目移除了 `mathTrust: true`，因此默认不会信任用户 LaTeX。
-
-**回归保护：** `tests/writingInteractions.test.ts` 验证默认配置不信任内容，同时保留宿主显式开启信任的能力。
-
-## 3. 演示项目的图片 Blob URL 未及时释放
+## 2. 演示项目的图片 Blob URL 未及时释放
 
 **问题：** 本地封面和正文图片使用 `URL.createObjectURL`，旧实现没有在移除图片或卸载页面时完整释放，长时间编辑大图可能持续占用内存。
 
 **修复：** `template/src/main.tsx` 维护已创建 URL 与待插入 URL 的集合：替换/移除封面时立即释放；正文图片从 Markdown 删除后释放；组件卸载时释放全部剩余 URL。待插入 URL 在真正写入 Markdown 前不会被提前回收。
 
-## 4. 依赖漏洞与 CI 缺少安全门禁
+## 3. 依赖漏洞与 CI 缺少安全门禁
 
 **问题：** 原依赖树包含 KaTeX、Milkdown 和 Vitest/Tinypool 的已知漏洞，CI 未运行依赖审计。
 
@@ -41,7 +33,7 @@
 npm test
 npm run build
 npm pack --dry-run
-npm audit --audit-level=low
+npm audit --audit-level=high
 ```
 
 另外，使用 `node bin/create-demo.mjs create <temp-dir> --no-install --package-spec file:D:\markdown-writer` 生成临时项目，随后在该项目中执行 `npm install` 与 `npm run build`，已验证模板会在真实安装场景下通过 TypeScript 检查和生产构建。

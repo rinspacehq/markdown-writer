@@ -244,7 +244,6 @@ export const MarkdownWriter = forwardRef<MarkdownWriterHandle, MarkdownWriterPro
           }
         },
         inlineMathLabels: current.labels.inlineMath,
-        mathTrust: current.editorOptions?.mathTrust ?? false,
       };
       const interactions = current.createInteractions
         ? current.createInteractions(interactionRuntime)

@@ -37,16 +37,7 @@ export type CreateWritingInteractionsOptions = {
   onPasteMarkdown?: (markdown: string) => void;
   onSynchronized?: () => void;
   inlineMathLabels?: InlineMathLabels;
-  mathTrust?: boolean;
 };
-
-export function latexPreviewOptions(mathTrust = false) {
-  return {
-    throwOnError: false,
-    strict: false,
-    trust: mathTrust,
-  } as const;
-}
 
 type PendingCodeBlockFocus = {
   beforeCount: number;
@@ -66,7 +57,6 @@ export function createWritingInteractions({
   onPasteMarkdown,
   onSynchronized,
   inlineMathLabels,
-  mathTrust = false,
 }: CreateWritingInteractionsOptions) {
   let attached = false;
   let destroyed = false;
@@ -132,7 +122,11 @@ export function createWritingInteractions({
   const syncLatexBlockViews = () => {
     host.querySelectorAll('.milkdown-code-block').forEach((block) => {
       if (!(block instanceof HTMLElement)) return;
-      syncLatexCodeBlockElement(block, latexPreviewOptions(mathTrust));
+      syncLatexCodeBlockElement(block, {
+        throwOnError: false,
+        strict: false,
+        trust: true,
+      });
     });
   };
 

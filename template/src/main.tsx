@@ -143,6 +143,7 @@ function App() {
             uploadImage: async (file) => createImageObjectUrl(file),
             imageCaptionPlaceholder: '添加图片说明',
             imageUploadPlaceholder: '上传图片',
+            mathTrust: true,
           }}
           quiver={{ label: 'Quiver', onOpen: () => undefined }}
           onError={(reason) => {
