@@ -11,7 +11,9 @@ import {
   promoteActiveCodeBlockInfoString,
 } from './mathCommands';
 import {
+  pasteCodeBlockInCtx,
   pasteMarkdownMathInCtx,
+  shouldPasteClipboardAsCodeBlock,
   shouldPasteClipboardAsMarkdown,
 } from './mathMarkdown';
 import { rinLatexBlockOpenEvent } from './mathEvents';
@@ -139,7 +141,16 @@ export function createWritingInteractions({
     if (readOnlyRef.current) return;
     const text = event.clipboardData?.getData('text/plain') || '';
     const html = event.clipboardData?.getData('text/html') || '';
-    if (!shouldPasteClipboardAsMarkdown(text, html) || !editorRef.current) return;
+    if (!editorRef.current) return;
+    const target = event.target;
+    if (target instanceof Element && target.closest('.cm-content')) return;
+    if (shouldPasteClipboardAsCodeBlock(text, html)) {
+      event.preventDefault();
+      event.stopPropagation();
+      editorRef.current.editor.action((ctx) => pasteCodeBlockInCtx(ctx, text));
+      return;
+    }
+    if (!shouldPasteClipboardAsMarkdown(text, html)) return;
     event.preventDefault();
     event.stopPropagation();
     editorRef.current.editor.action((ctx) => pasteMarkdownMathInCtx(ctx, text));

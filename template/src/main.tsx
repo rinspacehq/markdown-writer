@@ -6,7 +6,7 @@ import {
   type MarkdownWriterPageLabels,
 } from '@rinspacehq/markdown-writer/page';
 import '@rinspacehq/markdown-writer/writer.css';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const labels: MarkdownWriterLabels = {
@@ -64,11 +64,55 @@ function App() {
   const [coverUrl, setCoverUrl] = useState('');
   const [sourceVisibility, setSourceVisibility] = useState<'open' | 'private'>('open');
   const [error, setError] = useState('');
+  const imageObjectUrlsRef = useRef(new Set<string>());
+  const pendingImageObjectUrlsRef = useRef(new Set<string>());
+
+  const revokeObjectUrl = (url: string) => {
+    if (!url.startsWith('blob:')) return;
+    URL.revokeObjectURL(url);
+    imageObjectUrlsRef.current.delete(url);
+    pendingImageObjectUrlsRef.current.delete(url);
+  };
+
+  const createImageObjectUrl = (file: File) => {
+    const url = URL.createObjectURL(file);
+    imageObjectUrlsRef.current.add(url);
+    pendingImageObjectUrlsRef.current.add(url);
+    return url;
+  };
+
+  useEffect(() => () => {
+    imageObjectUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    imageObjectUrlsRef.current.clear();
+    pendingImageObjectUrlsRef.current.clear();
+  }, []);
 
   const selectCover = (file: File) => {
     setCoverUrl((current) => {
-      if (current.startsWith('blob:')) URL.revokeObjectURL(current);
-      return URL.createObjectURL(file);
+      revokeObjectUrl(current);
+      return createImageObjectUrl(file);
+    });
+  };
+
+  const removeCover = () => {
+    setCoverUrl((current) => {
+      revokeObjectUrl(current);
+      return '';
+    });
+  };
+
+  const releaseRemovedImages = (markdown: string) => {
+    pendingImageObjectUrlsRef.current.forEach((url) => {
+      if (markdown.includes(url)) pendingImageObjectUrlsRef.current.delete(url);
+    });
+    imageObjectUrlsRef.current.forEach((url) => {
+      if (
+        url !== coverUrl &&
+        !pendingImageObjectUrlsRef.current.has(url) &&
+        !markdown.includes(url)
+      ) {
+        revokeObjectUrl(url);
+      }
     });
   };
 
@@ -81,12 +125,13 @@ function App() {
           labels={labels}
           pageLabels={pageLabels}
           onTitleChange={setTitle}
+          onMarkdownChange={releaseRemovedImages}
           controls={{
             tags,
             onTagsChange: setTags,
             coverUrl,
             onCoverFile: selectCover,
-            onRemoveCover: () => setCoverUrl(''),
+            onRemoveCover: removeCover,
             sourceVisibility,
             onSourceVisibilityChange: setSourceVisibility,
             onOpenSummary: () => undefined,
@@ -95,7 +140,7 @@ function App() {
             canSave: Boolean(title.trim()),
           }}
           editorOptions={{
-            uploadImage: async (file) => URL.createObjectURL(file),
+            uploadImage: async (file) => createImageObjectUrl(file),
             imageCaptionPlaceholder: '添加图片说明',
             imageUploadPlaceholder: '上传图片',
             mathTrust: true,

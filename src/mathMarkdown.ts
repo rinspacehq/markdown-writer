@@ -28,10 +28,25 @@ function looksLikeCodeEditorClipboardHTML(html: string) {
 
 export function shouldPasteClipboardAsMarkdown(
   plainText: string,
+  _htmlText: string,
+) {
+  return Boolean(plainText) && hasMarkdownMath(plainText);
+}
+
+export function shouldPasteClipboardAsCodeBlock(
+  plainText: string,
   htmlText: string,
 ) {
-  if (!plainText) return false;
-  return hasMarkdownMath(plainText) || looksLikeCodeEditorClipboardHTML(htmlText);
+  return Boolean(plainText) && looksLikeCodeEditorClipboardHTML(htmlText);
+}
+
+export function markdownCodeFenceForMilkdown(source: string) {
+  const longestBacktickRun = Math.max(
+    0,
+    ...Array.from(source.matchAll(/`+/g), (match) => match[0].length),
+  );
+  const fence = '`'.repeat(Math.max(3, longestBacktickRun + 1));
+  return `${fence}\n${source}\n${fence}`;
 }
 
 export function markdownMathForMilkdown(markdown: string) {
@@ -79,6 +94,15 @@ export function pasteMarkdownMathInCtx(ctx: Ctx, markdown: string) {
     return;
   }
   insert(milkdownMarkdown)(ctx);
+}
+
+export function pasteCodeBlockInCtx(ctx: Ctx, source: string) {
+  const codeBlockMarkdown = markdownCodeFenceForMilkdown(source);
+  if (shouldReplaceDocumentOnPaste(ctx, codeBlockMarkdown)) {
+    replaceAll(codeBlockMarkdown, true)(ctx);
+    return;
+  }
+  insert(codeBlockMarkdown)(ctx);
 }
 
 export function restoreSelectionBookmarkInCtx(ctx: Ctx, bookmark: SelectionBookmark) {
