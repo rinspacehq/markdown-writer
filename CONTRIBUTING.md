@@ -1,6 +1,6 @@
 # Contributing / 贡献
 
-Issues and pull requests for the eight writing plugins, Markdown helpers, and minimal demo are welcome. Please keep changes independent of Rinspace accounts, private APIs, uploads, Quiver, and publication services.
+Issues and pull requests for the nine writing plugins, Markdown helpers, and minimal demo are welcome. Please keep changes independent of Rinspace accounts, private APIs, uploads, Quiver, and publication services.
 
 Before opening a pull request, run `npm ci`, `npm run build`, `npm test`, and `npm pack --dry-run`. Add a focused fixture when changing Markdown output, heading rules, selection behavior, or shortcuts. Never include production credentials or real user documents.
 
